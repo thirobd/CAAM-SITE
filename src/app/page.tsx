@@ -1,107 +1,84 @@
-import Link from "next/link";
-import { BottleArt } from "@/components/BottleArt";
-import { ProductCard } from "@/components/ProductCard";
-import { products } from "@/lib/catalog";
+import { BrandStory } from "@/components/home/brand-story";
+import { CollectionsTriptych } from "@/components/home/collections-triptych";
+import { FamiliesGrid } from "@/components/home/families-grid";
+import { Hero } from "@/components/home/hero";
+import { Newsletter } from "@/components/home/newsletter";
+import { RevealGroup, RevealItem } from "@/components/motion/reveal";
+import { ProductCard } from "@/components/product/product-card";
+import { ArrowLink } from "@/components/ui/button";
+import { SectionHeading } from "@/components/ui/section-heading";
+import { getBestSellers, getFeaturedProducts, getProducts } from "@/lib/catalog/repository";
 
-export default function HomePage() {
-  const [first, second] = products;
+export default async function HomePage() {
+  const [products, featured, bestSellers] = await Promise.all([getProducts(), getFeaturedProducts(4), getBestSellers(4)]);
 
   return (
     <>
-      <section className="hero container">
-        <div className="hero__text">
-          <span className="eyebrow">Maison de parfum</span>
-          <h1 className="display">
-            L&apos;art du parfum,
-            <br />
-            <em>composé à deux.</em>
-          </h1>
-          <p className="lead">
-            ĆAAM est née d&apos;un couple et d&apos;une même obsession : créer des parfums qui racontent
-            une histoire. Des compositions rares, imaginées ensemble et expédiées dans le monde entier.
-          </p>
-          <div className="hero__actions">
-            <Link href="/boutique" className="button">
-              Découvrir la collection
-            </Link>
-            <Link href="/maison" className="link-arrow">
-              Notre histoire
-            </Link>
-          </div>
-        </div>
-        <div className="hero__visual" aria-hidden="true">
-          <div className="arch">
-            <BottleArt tint={second.tint} className="hero__bottle hero__bottle--back" />
-            <BottleArt tint={first.tint} name={first.name} className="hero__bottle hero__bottle--front" />
-          </div>
-        </div>
-      </section>
+      <Hero products={featured.slice(0, 3)} />
 
-      <section className="manifesto">
-        <div className="container container--narrow">
-          <p className="manifesto__quote">
-            « Un parfum ne se porte pas, il se vit. Chaque création ĆAAM est une conversation entre deux
-            sensibilités, une signature que l&apos;on garde sur la peau. »
-          </p>
-        </div>
-      </section>
-
-      <section className="section container">
-        <div className="section__head">
-          <div>
-            <span className="eyebrow">La collection</span>
-            <h2 className="heading">Nos créations</h2>
-          </div>
-          <Link href="/boutique" className="link-arrow">
-            Toute la boutique
-          </Link>
-        </div>
-        <div className="product-grid">
-          {products.map((p) => (
-            <ProductCard key={p.slug} product={p} />
+      <section className="container-luxe py-20 md:py-32" aria-label="Nos signatures">
+        <SectionHeading
+          eyebrow="Sélection"
+          title="Nos signatures"
+          description="Quatre extraits qui racontent la maison : intenses, élégants, inoubliables."
+          action={<ArrowLink href="/boutique">Toute la boutique</ArrowLink>}
+        />
+        <RevealGroup className="mt-12 grid grid-cols-2 gap-x-4 gap-y-12 md:mt-16 md:gap-x-6 lg:grid-cols-4">
+          {featured.map((p) => (
+            <RevealItem key={p.id}>
+              <ProductCard product={p} />
+            </RevealItem>
           ))}
+        </RevealGroup>
+      </section>
+
+      <section className="container-luxe pb-20 md:pb-32" aria-label="Collections">
+        <SectionHeading eyebrow="Collections" title="Pour chaque personnalité" className="mb-12" />
+        <CollectionsTriptych products={products} />
+      </section>
+
+      <section className="bg-ivory-deep py-20 md:py-32">
+        <div className="container-luxe">
+          <SectionHeading
+            eyebrow="Familles olfactives"
+            title="Trouvez votre territoire"
+            description="Six univers, de la chaleur de l'ambre à la fraîcheur du néroli."
+            className="mb-12 md:mb-16"
+          />
+          <FamiliesGrid products={products} />
         </div>
       </section>
 
-      <section className="split container">
-        <div className="split__visual" aria-hidden="true">
-          <div className="arch arch--dark">
-            <span className="split__monogram">Ć</span>
-          </div>
-        </div>
-        <div className="split__text">
-          <span className="eyebrow">La Maison</span>
-          <h2 className="heading">Une maison, deux signatures</h2>
-          <p>
-            Tout a commencé par une collection de flacons rapportés de voyage, et des soirées passées à
-            sentir, comparer, imaginer. De cette passion partagée est née ĆAAM : une maison
-            indépendante où chaque parfum est pensé à deux, du premier accord jusqu&apos;au flacon.
-          </p>
-          <p>
-            Nous travaillons en petites séries, avec des matières premières choisies pour leur
-            caractère, afin que chaque création garde quelque chose de rare.
-          </p>
-          <Link href="/maison" className="link-arrow">
-            Découvrir notre histoire
-          </Link>
+      <section className="grain bg-ink py-20 text-ivory md:py-32">
+        <div className="container-luxe">
+          <SectionHeading
+            tone="dark"
+            eyebrow="Meilleures ventes"
+            title="Les plus aimés"
+            description="Les extraits les plus demandés de la maison."
+            action={<ArrowLink href="/boutique?tri=recommandes" className="text-ivory/85 hover:text-ivory">Voir la boutique</ArrowLink>}
+          />
+          <RevealGroup
+            as="div"
+            className="no-scrollbar -mx-4 mt-12 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 md:mt-16 lg:mx-0 lg:grid lg:grid-cols-4 lg:gap-6 lg:overflow-visible lg:px-0"
+          >
+            {bestSellers.map((p, i) => (
+              <RevealItem key={p.id} className="w-[72%] shrink-0 snap-start sm:w-[45%] lg:w-auto">
+                <ProductCard product={p} tone="dark" rank={i + 1} />
+              </RevealItem>
+            ))}
+          </RevealGroup>
         </div>
       </section>
 
-      <section className="section container">
-        <ul className="promises">
-          <li>
-            <h3>Expédié dans le monde entier</h3>
-            <p>Livraison suivie en France, en Europe et à l&apos;international, avec un emballage soigné.</p>
-          </li>
-          <li>
-            <h3>Paiement sécurisé</h3>
-            <p>Carte bancaire, Apple Pay ou Google Pay, dans votre devise, via Stripe.</p>
-          </li>
-          <li>
-            <h3>Petites séries</h3>
-            <p>Des parfums composés avec exigence et produits en quantités limitées.</p>
-          </li>
-        </ul>
+      <section className="container-luxe py-20 md:py-32">
+        <BrandStory />
+      </section>
+
+      <section className="border-t border-ink/10 bg-paper py-20 md:py-28">
+        <div className="container-luxe">
+          <Newsletter />
+        </div>
       </section>
     </>
   );

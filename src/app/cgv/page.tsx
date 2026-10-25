@@ -1,54 +1,30 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { LegalPage } from "@/components/LegalPage";
-import { site } from "@/lib/site";
+import { ContentPage } from "@/components/ui/content-page";
 
 export const metadata: Metadata = { title: "Conditions générales de vente" };
 
 // Modèle à compléter et à faire valider selon le pays d'immatriculation de l'entreprise.
 export default function CgvPage() {
   return (
-    <LegalPage title="Conditions générales de vente">
-      <p>Dernière mise à jour : [date]</p>
-
+    <ContentPage eyebrow="Informations légales" title="Conditions générales de vente" intro="Modèle à compléter et à faire valider avant la mise en ligne.">
       <h2>1. Objet</h2>
-      <p>
-        Les présentes conditions régissent les ventes de parfums réalisées sur ce site par {site.name}
-        [raison sociale, adresse] auprès de clients particuliers.
-      </p>
-
+      <p>Les présentes conditions régissent les ventes de parfums réalisées sur ce site par ĆAAM [raison sociale, adresse].</p>
       <h2>2. Prix</h2>
       <p>
-        Les prix sont indiqués en euros, toutes taxes comprises, hors frais de livraison. Les frais de
-        livraison sont précisés avant la validation de la commande. Le paiement peut être présenté dans
-        la devise du client ; le taux de conversion est alors indiqué au moment du paiement.
+        Les prix sont indiqués en francs CFA (FCFA), toutes taxes comprises, hors frais de livraison. Les montants affichés en euros le sont à titre
+        indicatif, sur la base de la parité fixe 1 € = 655,957 FCFA.
       </p>
-
       <h2>3. Commande et paiement</h2>
-      <p>
-        Le paiement s&apos;effectue en ligne par l&apos;intermédiaire de Stripe. La commande est
-        définitive après confirmation du paiement ; un e-mail de confirmation est alors envoyé.
-      </p>
-
+      <p>[Modes de paiement acceptés, moment du débit, confirmation de commande.]</p>
       <h2>4. Livraison</h2>
       <p>
-        Les zones, délais et tarifs sont détaillés sur la page{" "}
-        <Link href="/livraison">Livraison & retours</Link>. Pour les envois hors Union européenne, les
-        éventuels droits et taxes d&apos;importation sont à la charge du client.
+        Les zones, délais et frais sont détaillés sur la page <Link href="/livraison">Livraison & retours</Link>.
       </p>
-
-      <h2>5. Droit de rétractation</h2>
-      <p>
-        Le client dispose de 14 jours à compter de la réception pour exercer son droit de rétractation.
-        Pour des raisons d&apos;hygiène, ce droit ne s&apos;applique pas aux produits descellés après
-        la livraison. [Préciser les modalités de retour et de remboursement.]
-      </p>
-
-      <h2>6. Contact et réclamations</h2>
-      <p>
-        Pour toute question : <a href={`mailto:${site.email}`}>{site.email}</a>. [Indiquer le médiateur
-        de la consommation compétent, le cas échéant.]
-      </p>
-    </LegalPage>
+      <h2>5. Retours et rétractation</h2>
+      <p>[Délai et conditions de retour ; exclusion des produits descellés pour des raisons d&apos;hygiène.]</p>
+      <h2>6. Réclamations</h2>
+      <p>[Coordonnées du service client et procédure de réclamation.]</p>
+    </ContentPage>
   );
 }
