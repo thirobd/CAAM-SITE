@@ -16,23 +16,7 @@ export default async function HomePage() {
     <>
       <Hero products={featured.length > 0 ? featured : products.slice(0, 4)} />
 
-      <section className="container-luxe py-20 md:py-32" aria-label="Nos signatures">
-        <SectionHeading
-          eyebrow="Sélection"
-          title="Nos signatures"
-          description="Quatre extraits qui racontent la maison : intenses, élégants, inoubliables."
-          action={<ArrowLink href="/boutique">Toute la boutique</ArrowLink>}
-        />
-        <RevealGroup className="mt-12 grid grid-cols-2 gap-x-4 gap-y-12 md:mt-16 md:gap-x-6 lg:grid-cols-4">
-          {featured.map((p) => (
-            <RevealItem key={p.id}>
-              <ProductCard product={p} />
-            </RevealItem>
-          ))}
-        </RevealGroup>
-      </section>
-
-      <section className="container-luxe pb-20 md:pb-32" aria-label="Collections">
+      <section className="container-luxe py-20 md:py-32" aria-label="Collections">
         <SectionHeading eyebrow="Collections" title="Pour chaque personnalité" className="mb-12" />
         <CollectionsTriptych products={products} />
       </section>

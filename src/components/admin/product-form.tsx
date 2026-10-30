@@ -343,7 +343,7 @@ export function ProductForm({ initial }: { initial: ProductInput }) {
       <fieldset className="space-y-3">
         <legend className={sectionTitle}>Visibilité</legend>
         <Toggle label="Publié sur le site" hint="Décoché, le parfum reste enregistré mais n'apparaît pas dans la boutique." checked={p.isPublished} onChange={(v) => set("isPublished", v)} />
-        <Toggle label="Mis en avant à l'accueil" hint="Rubrique « Nos signatures » (4 parfums au plus)." checked={p.featured} onChange={(v) => set("featured", v)} />
+        <Toggle label="Mis en avant à l'accueil" hint="Photos qui défilent en haut de l'accueil (4 parfums au plus)." checked={p.featured} onChange={(v) => set("featured", v)} />
         <Toggle label="Badge « Nouveau »" hint="Affiché sur la carte du parfum." checked={p.isNew} onChange={(v) => set("isNew", v)} />
         <div className="grid gap-5 pt-2 sm:grid-cols-2">
           <Field id="p-rank" label="Classement « Meilleures ventes »" error={errors.bestSellerRank} hint="1 = le plus vendu. Vide = absent de la rubrique.">
