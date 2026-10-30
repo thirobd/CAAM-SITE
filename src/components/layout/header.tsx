@@ -74,7 +74,7 @@ export function Header({ searchEntries }: { searchEntries: SearchEntry[] }) {
               <Search className="size-5" strokeWidth={1.25} />
             </button>
             {/* Compte client : connexion ou inscription. Le propriétaire s'y connecte aussi et rejoint son espace. */}
-            <Link href="/compte" prefetch={false} className={cn(iconButton, "grid")} aria-label="Mon compte">
+            <Link href="/compte" className={cn(iconButton, "grid")} aria-label="Mon compte">
               <User className="size-5" strokeWidth={1.25} />
             </Link>
             <button
