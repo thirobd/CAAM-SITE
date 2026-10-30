@@ -21,7 +21,7 @@ export function FamiliesGrid({ products }: { products: Product[] }) {
                 <p className="mt-2 text-[15px] leading-relaxed text-stone">{f.description}</p>
               </div>
               <span className="eyebrow mt-auto text-gold-deep">
-                {count} parfum{count > 1 ? "s" : ""}
+                {count === 0 ? "Bientôt" : `${count} parfum${count > 1 ? "s" : ""}`}
                 <span aria-hidden="true" className="ml-2 inline-block transition-transform duration-500 group-hover:translate-x-1">→</span>
               </span>
             </Link>

@@ -49,27 +49,30 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="grain bg-ink py-20 text-ivory md:py-32">
-        <div className="container-luxe">
-          <SectionHeading
-            tone="dark"
-            eyebrow="Meilleures ventes"
-            title="Les plus aimés"
-            description="Les extraits les plus demandés de la maison."
-            action={<ArrowLink href="/boutique?tri=recommandes" className="text-ivory/85 hover:text-ivory">Voir la boutique</ArrowLink>}
-          />
-          <RevealGroup
-            as="div"
-            className="no-scrollbar -mx-4 mt-12 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 md:mt-16 lg:mx-0 lg:grid lg:grid-cols-4 lg:gap-6 lg:overflow-visible lg:px-0"
-          >
-            {bestSellers.map((p, i) => (
-              <RevealItem key={p.id} className="w-[72%] shrink-0 snap-start sm:w-[45%] lg:w-auto">
-                <ProductCard product={p} tone="dark" rank={i + 1} />
-              </RevealItem>
-            ))}
-          </RevealGroup>
-        </div>
-      </section>
+      {/* Affiché seulement quand des meilleures ventes sont renseignées (best_seller_rank dans Supabase). */}
+      {bestSellers.length > 0 && (
+        <section className="grain bg-ink py-20 text-ivory md:py-32">
+          <div className="container-luxe">
+            <SectionHeading
+              tone="dark"
+              eyebrow="Meilleures ventes"
+              title="Les plus aimés"
+              description="Les extraits les plus demandés de la maison."
+              action={<ArrowLink href="/boutique?tri=recommandes" className="text-ivory/85 hover:text-ivory">Voir la boutique</ArrowLink>}
+            />
+            <RevealGroup
+              as="div"
+              className="no-scrollbar -mx-4 mt-12 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 md:mt-16 lg:mx-0 lg:grid lg:grid-cols-4 lg:gap-6 lg:overflow-visible lg:px-0"
+            >
+              {bestSellers.map((p, i) => (
+                <RevealItem key={p.id} className="w-[72%] shrink-0 snap-start sm:w-[45%] lg:w-auto">
+                  <ProductCard product={p} tone="dark" rank={i + 1} />
+                </RevealItem>
+              ))}
+            </RevealGroup>
+          </div>
+        </section>
+      )}
 
       <section className="container-luxe py-20 md:py-32">
         <BrandStory />
