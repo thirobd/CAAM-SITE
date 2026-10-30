@@ -3,7 +3,7 @@ import type { AdminOrder, OrderStatus } from "@/lib/admin/orders";
 import type { AdminSession } from "./session";
 
 const SELECT =
-  "id, reference, status, customer_name, phone, country, city, address, notes, payment_method, subtotal_xof, delivery_label, delivery_fee_xof, total_xof, stock_applied, admin_note, created_at, order_items (id, product_name, size_ml, quantity, unit_price_xof)";
+  "id, reference, status, user_id, customer_name, phone, country, city, address, notes, payment_method, subtotal_xof, delivery_label, delivery_fee_xof, total_xof, stock_applied, admin_note, created_at, order_items (id, product_name, size_ml, quantity, unit_price_xof)";
 
 export async function listOrders({ supabase }: AdminSession, status?: OrderStatus, limit = 100): Promise<AdminOrder[]> {
   let query = supabase.from("orders").select(SELECT).order("created_at", { ascending: false }).limit(limit);

@@ -19,6 +19,8 @@ export type AdminOrder = {
   id: string;
   reference: string;
   status: OrderStatus;
+  /** Compte client ayant passé la commande, null pour une commande sans compte. */
+  user_id: string | null;
   customer_name: string;
   phone: string;
   country: string;

@@ -73,8 +73,8 @@ export function Header({ searchEntries }: { searchEntries: SearchEntry[] }) {
             <button type="button" className={cn(iconButton, "grid")} onClick={() => setSearchOpen(true)} aria-label="Rechercher un parfum">
               <Search className="size-5" strokeWidth={1.25} />
             </button>
-            {/* Espace propriétaire : page de connexion, ou tableau de bord si déjà connecté. */}
-            <Link href="/admin" prefetch={false} className={cn(iconButton, "grid")} aria-label="Espace propriétaire">
+            {/* Compte client : connexion ou inscription. Le propriétaire s'y connecte aussi et rejoint son espace. */}
+            <Link href="/compte" prefetch={false} className={cn(iconButton, "grid")} aria-label="Mon compte">
               <User className="size-5" strokeWidth={1.25} />
             </Link>
             <button

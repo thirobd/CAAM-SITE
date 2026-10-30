@@ -4,9 +4,9 @@ import { NextResponse, type NextRequest } from "next/server";
 const LOGIN_PATH = "/admin/connexion";
 
 /**
- * Espace propriétaire : rafraîchit la session Supabase à chaque requête et renvoie vers la
- * page de connexion sans session. Simple pré-filtre : chaque page et chaque action de /admin
- * revérifie le statut d'administrateur, et la base le contrôle encore (RLS).
+ * Rafraîchit la session Supabase (espace propriétaire et compte client). Sur /admin, renvoie
+ * aussi vers la page de connexion sans session. Simple pré-filtre : chaque page et chaque action
+ * de /admin revérifie le statut d'administrateur, et la base le contrôle encore (RLS).
  */
 export async function proxy(request: NextRequest) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -31,7 +31,8 @@ export async function proxy(request: NextRequest) {
   // Rafraîchit le jeton si besoin : rien ne doit s'intercaler entre la création du client et cet appel.
   const { data } = await supabase.auth.getClaims();
 
-  if (!data?.claims && request.nextUrl.pathname !== LOGIN_PATH) {
+  const { pathname } = request.nextUrl;
+  if (!data?.claims && pathname.startsWith("/admin") && pathname !== LOGIN_PATH) {
     const login = request.nextUrl.clone();
     login.pathname = LOGIN_PATH;
     login.search = "";
@@ -45,5 +46,6 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  // /compte : rafraîchissement de la session client seulement (la page gère elle-même l'absence de compte).
+  matcher: ["/admin/:path*", "/compte/:path*"],
 };

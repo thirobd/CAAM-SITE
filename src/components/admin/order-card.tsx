@@ -57,6 +57,7 @@ export function OrderCard({ order }: { order: AdminOrder }) {
           <p className="font-serif text-2xl tracking-wide lining-nums">{order.reference}</p>
           <p className="text-[13px] text-stone">
             <LocalDate iso={order.created_at} /> · {order.customer_name}
+            {order.user_id && <span className="ml-2 border border-gold-deep/40 px-1.5 py-0.5 text-[10px] uppercase tracking-[0.14em] text-gold-deep">Client inscrit</span>}
           </p>
         </div>
         <span className={cn("border px-3 py-1 text-[11px] uppercase tracking-[0.18em]", statusTone[status])}>

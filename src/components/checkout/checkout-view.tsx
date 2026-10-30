@@ -1,10 +1,12 @@
 "use client";
 
-import { AlertCircle, Banknote, CreditCard, LoaderCircle, ShoppingBag, Smartphone } from "lucide-react";
-import { useState, useTransition } from "react";
+import Link from "next/link";
+import { AlertCircle, Banknote, CreditCard, LoaderCircle, ShoppingBag, Smartphone, User } from "lucide-react";
+import { useEffect, useState, useTransition } from "react";
 import { WhatsAppIcon } from "@/components/brand/social-icons";
 import { useCart } from "@/components/providers/cart";
 import { Button, ButtonLink } from "@/components/ui/button";
+import type { CustomerProfile } from "@/lib/account";
 import {
   emptyCheckout,
   paymentMethods,
@@ -17,6 +19,7 @@ import {
 import { countries, estimateDelivery } from "@/lib/delivery";
 import { useHydrated } from "@/lib/use-hydrated";
 import { cn } from "@/lib/utils";
+import { getCheckoutProfile } from "@/server/account";
 import { placeOrder } from "@/server/orders";
 import { Field } from "./field";
 import { OrderConfirmation } from "./order-confirmation";
@@ -38,6 +41,30 @@ export function CheckoutView() {
   const [order, setOrder] = useState<Order | null>(null);
   const [pending, startTransition] = useTransition();
   const hydrated = useHydrated();
+  // Client connecté : ses coordonnées enregistrées pré-remplissent les champs encore vides.
+  const [account, setAccount] = useState<CustomerProfile | null>(null);
+  const [remember, setRemember] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    getCheckoutProfile()
+      .then((profile) => {
+        if (!active || !profile) return;
+        setAccount(profile);
+        setFields((f) => ({
+          ...f,
+          fullName: f.fullName || profile.fullName,
+          phone: f.phone || profile.phone,
+          country: f.city || f.address ? f.country : profile.country || f.country,
+          city: f.city || profile.city,
+          address: f.address || profile.address,
+        }));
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const delivery = estimateDelivery(fields.country, fields.city);
 
@@ -75,6 +102,7 @@ export function CheckoutView() {
         const result = await placeOrder(
           fields,
           lines.map((l) => ({ variantId: l.variantId, quantity: l.quantity })),
+          account !== null && remember,
         );
         if (result.ok) {
           // Le panier est vidé seulement quand le client ouvre WhatsApp pour envoyer la commande.
@@ -132,6 +160,22 @@ export function CheckoutView() {
           demandé sur ce site.
         </p>
       </div>
+      <p className="mt-4 flex items-center gap-2 text-sm text-stone">
+        <User className="size-4 shrink-0 text-gold-deep" strokeWidth={1.25} aria-hidden="true" />
+        {account ? (
+          <span>
+            Connecté : {account.email}. La commande sera ajoutée à <Link href="/compte" className="underline underline-offset-4">votre compte</Link>.
+          </span>
+        ) : (
+          <span>
+            Vous avez un compte ?{" "}
+            <Link href="/compte?suite=/commande" className="text-ink underline underline-offset-4">
+              Connectez-vous
+            </Link>{" "}
+            pour retrouver vos coordonnées et suivre vos commandes.
+          </span>
+        )}
+      </p>
 
       <div className="mt-10 grid gap-10 lg:grid-cols-[1.25fr_1fr] lg:gap-16">
         <form onSubmit={submit} noValidate className="space-y-12" aria-describedby={formError ? "checkout-form-error" : undefined}>
@@ -221,6 +265,12 @@ export function CheckoutView() {
           </fieldset>
 
           <div className="space-y-4">
+            {account && (
+              <label className="flex cursor-pointer items-center gap-3 text-sm">
+                <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} className="size-4 accent-ink" />
+                Mémoriser ces coordonnées dans mon compte
+              </label>
+            )}
             {formError && (
               <p id="checkout-form-error" role="alert" className="flex items-start gap-3 bg-danger/10 px-4 py-3 text-sm text-danger">
                 <AlertCircle className="mt-0.5 size-4 shrink-0" strokeWidth={1.5} aria-hidden="true" />

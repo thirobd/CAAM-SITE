@@ -2,7 +2,7 @@
 
 import { findVariant } from "@/lib/catalog/repository";
 import { MAX_PER_ORDER } from "@/lib/catalog/stock";
-import { getSupabase } from "@/lib/supabase/server";
+import { createSessionClient, isSupabaseConfigured } from "@/lib/supabase/session";
 import {
   validateCheckout,
   type CheckoutFields,
@@ -19,8 +19,10 @@ import { countries, estimateDelivery } from "@/lib/delivery";
  * commande (statut « nouvelle », visible dans /admin/commandes) puis renvoie la commande et sa
  * référence. Rien n'est débité : le client transmet la commande en envoyant le message WhatsApp,
  * et le stock n'est retiré que lorsque ĆAAM confirme la commande.
+ * Client connecté : la commande est rattachée à son compte et, s'il le souhaite (remember),
+ * ses coordonnées sont mémorisées pour la prochaine fois.
  */
-export async function placeOrder(input: CheckoutFields, items: CheckoutItem[]): Promise<PlaceOrderResult> {
+export async function placeOrder(input: CheckoutFields, items: CheckoutItem[], remember = false): Promise<PlaceOrderResult> {
   // Les arguments d'une action serveur viennent du navigateur : on les normalise avant tout.
   const str = (v: unknown) => (typeof v === "string" ? v : "");
   const fields: CheckoutFields = {
@@ -70,7 +72,8 @@ export async function placeOrder(input: CheckoutFields, items: CheckoutItem[]): 
 
   // Enregistrement pour l'espace propriétaire. La base relit elle-même prix et stock.
   let reference = `CAAM-${crypto.randomUUID().slice(0, 6).toUpperCase()}`;
-  const supabase = process.env.CATALOG_SOURCE === "demo" ? null : getSupabase();
+  // Session du client (s'il est connecté) : la base rattache la commande à son compte.
+  const supabase = process.env.CATALOG_SOURCE === "demo" || !isSupabaseConfigured() ? null : await createSessionClient();
   if (supabase) {
     const { data, error } = await supabase.rpc("place_order", {
       p_customer: {
@@ -94,6 +97,23 @@ export async function placeOrder(input: CheckoutFields, items: CheckoutItem[]): 
       console.error("Commande non enregistrée :", error.message);
     } else if (typeof data === "string") {
       reference = data;
+    }
+
+    if (remember === true) {
+      const { data: claims } = await supabase.auth.getClaims();
+      const userId = claims?.claims?.sub;
+      if (userId) {
+        await supabase
+          .from("customers")
+          .update({
+            full_name: fields.fullName.trim(),
+            phone: fields.phone.trim(),
+            country: fields.country,
+            city: fields.city.trim(),
+            address: fields.address.trim(),
+          })
+          .eq("user_id", userId);
+      }
     }
   }
 
