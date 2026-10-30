@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Reveal } from "@/components/motion/reveal";
 import { ArrowLink } from "@/components/ui/button";
-import mark from "../../../public/brand/caam-mark.png";
+import roundLogo from "../../../public/brand/caam-logo-rond.png";
 
 const pillars = [
   { title: "Caractère", text: "Des compositions affirmées, qui ne ressemblent qu'à vous." },
@@ -14,8 +14,13 @@ export function BrandStory() {
     <div className="grid items-center gap-14 lg:grid-cols-2 lg:gap-24">
       <Reveal className="flex justify-center">
         <div className="grain relative grid aspect-[4/5] w-full max-w-[460px] place-items-center overflow-hidden rounded-t-full bg-ink">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_45%,rgba(216,191,138,0.28),transparent_62%)]" />
-          <Image src={mark} alt="" className="relative h-[46%] w-auto drop-shadow-[0_0_40px_rgba(216,191,138,0.35)]" sizes="220px" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_55%,rgba(216,191,138,0.32),transparent_62%)]" />
+          <Image
+            src={roundLogo}
+            alt="ĆAAM"
+            className="relative mt-[12%] w-[72%] h-auto drop-shadow-[0_0_48px_rgba(216,191,138,0.4)]"
+            sizes="(max-width: 1024px) 70vw, 330px"
+          />
         </div>
       </Reveal>
 

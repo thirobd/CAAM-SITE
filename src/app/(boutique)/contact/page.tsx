@@ -7,14 +7,14 @@ import { site, whatsappUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Contact",
-  description: "Contacter la maison ĆAAM : WhatsApp, Instagram, TikTok et téléphone.",
+  description: "Contacter la maison ĆAAM : WhatsApp, e-mail, Instagram et TikTok.",
 };
 
 const cards = [
   { icon: Phone, label: "Téléphone / WhatsApp", value: site.contact.phone, href: whatsappUrl() },
+  { icon: Mail, label: "E-mail", value: site.contact.email, href: `mailto:${site.contact.email}` },
   { icon: InstagramIcon, label: "Instagram", value: "@caamleparfum", href: site.social.instagram },
   { icon: TikTokIcon, label: "TikTok", value: "@caam_leparfum", href: site.social.tiktok },
-  { icon: Mail, label: "E-mail", value: "À venir", href: null },
 ];
 
 export default function ContactPage() {
@@ -33,18 +33,21 @@ export default function ContactPage() {
             <>
               <Icon className="size-6 text-gold-deep" strokeWidth={1.25} />
               <span className="eyebrow mt-8 block text-stone">{label}</span>
-              <span className="mt-2 block font-serif text-2xl">{value}</span>
+              <span className="mt-2 block break-words font-serif text-2xl">{value}</span>
             </>
           );
+          // Les liens « mailto: » ouvrent la messagerie : pas de nouvel onglet.
+          const external = href.startsWith("http");
           return (
             <li key={label}>
-              {href ? (
-                <a href={href} target="_blank" rel="noopener noreferrer" className="block h-full border border-ink/15 bg-paper p-7 transition-colors hover:border-ink">
-                  {content}
-                </a>
-              ) : (
-                <div className="h-full border border-dashed border-ink/15 p-7 opacity-70">{content}</div>
-              )}
+              <a
+                href={href}
+                target={external ? "_blank" : undefined}
+                rel={external ? "noopener noreferrer" : undefined}
+                className="block h-full border border-ink/15 bg-paper p-7 transition-colors hover:border-ink"
+              >
+                {content}
+              </a>
             </li>
           );
         })}

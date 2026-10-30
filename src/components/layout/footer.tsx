@@ -82,8 +82,10 @@ export function Footer() {
                 <Phone className="size-4" strokeWidth={1.25} aria-hidden="true" /> {site.contact.phone}
               </a>
             </li>
-            <li className="flex items-center gap-3 text-ivory/50">
-              <Mail className="size-4" strokeWidth={1.25} aria-hidden="true" /> E-mail à venir
+            <li>
+              <a href={`mailto:${site.contact.email}`} className="inline-flex items-center gap-3 break-all text-ivory/75 hover:text-ivory">
+                <Mail className="size-4 shrink-0" strokeWidth={1.25} aria-hidden="true" /> {site.contact.email}
+              </a>
             </li>
           </ul>
         </div>

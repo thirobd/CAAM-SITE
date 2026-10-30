@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ContentPage } from "@/components/ui/content-page";
+import { site } from "@/lib/site";
 
 export const metadata: Metadata = { title: "Mentions légales" };
 
@@ -17,7 +18,7 @@ export default function MentionsLegalesPage() {
         <br />
         Responsable de la publication : [Prénom Nom]
         <br />
-        Contact : [Adresse e-mail]
+        Contact : <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a> · {site.contact.phone}
       </p>
       <h2>Hébergement</h2>
       <p>[Nom, adresse et coordonnées de l&apos;hébergeur]</p>

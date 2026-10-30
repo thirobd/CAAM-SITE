@@ -53,6 +53,9 @@ export type SearchEntry = {
   priceFromXof: number;
   available: boolean;
   text: string;
+  /** Collection et famille, puis notes : servent aux suggestions de recherche. */
+  tags: string[];
+  notes: string[];
 };
 
 export function toSearchEntry(p: Product): SearchEntry {
@@ -65,7 +68,24 @@ export function toSearchEntry(p: Product): SearchEntry {
     priceFromXof: startingPrice(p),
     available: isAvailable(p),
     text: searchText(p),
+    tags: [getCollection(p.collection).label, getFamily(p.family).label],
+    notes: [...p.notes.top, ...p.notes.heart, ...p.notes.base],
   };
+}
+
+/** Suggestions tirées du catalogue : collections et familles présentes, puis les notes les plus fréquentes. */
+export function searchSuggestions(entries: SearchEntry[], maxNotes = 8): { tags: string[]; notes: string[] } {
+  const tags = [...new Set(entries.flatMap((e) => e.tags))];
+  // « Ambre » (note) ferait doublon avec « Ambré » (famille) : la recherche les confond.
+  const taken = new Set(tags.map(normalize));
+  const counts = new Map<string, number>();
+  for (const note of entries.flatMap((e) => e.notes)) counts.set(note, (counts.get(note) ?? 0) + 1);
+  const notes = [...counts.entries()]
+    .filter(([note]) => !taken.has(normalize(note)))
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "fr"))
+    .slice(0, maxNotes)
+    .map(([note]) => note);
+  return { tags, notes };
 }
 
 export function searchEntries(entries: SearchEntry[], query: string): SearchEntry[] {

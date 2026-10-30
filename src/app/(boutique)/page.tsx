@@ -14,7 +14,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <Hero products={featured.slice(0, 3)} />
+      <Hero products={featured.length > 0 ? featured : products.slice(0, 4)} />
 
       <section className="container-luxe py-20 md:py-32" aria-label="Nos signatures">
         <SectionHeading

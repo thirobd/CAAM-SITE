@@ -17,7 +17,7 @@ export const site = {
     whatsappCatalog: "https://wa.me/c/33667799533",
   },
   contact: {
-    email: "contact@exemple.com", // À COMPLÉTER
+    email: "caamocaama@gmail.com",
     phone: "+33 6 67 79 95 33",
     // Même numéro au format international sans « + » ni espaces, pour les liens wa.me
     whatsapp: "33667799533",

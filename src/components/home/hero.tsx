@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useEffect, useState } from "react";
@@ -11,6 +12,7 @@ import { cn } from "@/lib/utils";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 const ROTATE_MS = 6000;
+const PHOTO_SIZES = "(max-width: 1024px) 60vw, 340px";
 
 const lines = [
   { text: "Caractère.", accent: false },
@@ -123,15 +125,31 @@ function HeroVisual({ products }: { products: Product[] }) {
             exit={{ opacity: 0, y: -16, filter: "blur(6px)" }}
             transition={{ duration: 1.1, ease }}
           >
-            <BottleArt tint={product.tint} name={product.name} className="h-[64%] w-auto drop-shadow-[0_40px_50px_rgba(0,0,0,0.55)]" />
+            {product.images[0] ? (
+              <div className="relative aspect-[4/5] h-[72%] overflow-hidden shadow-[0_40px_60px_-12px_rgba(0,0,0,0.75)] ring-1 ring-ivory/15">
+                <Image src={product.images[0]} alt={product.name} fill sizes={PHOTO_SIZES} priority={index === 0} className="object-cover" />
+              </div>
+            ) : (
+              <BottleArt tint={product.tint} name={product.name} className="h-[64%] w-auto drop-shadow-[0_40px_50px_rgba(0,0,0,0.55)]" />
+            )}
           </motion.div>
         </AnimatePresence>
+
+        {/* Photos suivantes chargées à l'avance : le fondu enchaîné reste fluide. */}
+        <div aria-hidden="true" className="pointer-events-none absolute size-px overflow-hidden opacity-0">
+          {products.map((p) =>
+            p.images[0] && p.id !== product.id ? (
+              <div key={p.id} className="relative size-px">
+                <Image src={p.images[0]} alt="" fill sizes={PHOTO_SIZES} loading="eager" />
+              </div>
+            ) : null,
+          )}
+        </div>
       </div>
 
       <div className="mt-6 flex items-end justify-between gap-6">
         <div aria-live="polite">
-          <p className="eyebrow text-mist">N° {String(index + 1).padStart(2, "0")} — Signature</p>
-          <Link href={`/parfums/${product.slug}`} className="mt-2 block font-serif text-3xl hover:text-champagne">
+          <Link href={`/parfums/${product.slug}`} className="block font-serif text-3xl hover:text-champagne">
             {product.name}
           </Link>
         </div>

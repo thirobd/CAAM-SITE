@@ -7,10 +7,11 @@ import { ArrowRight, Search, X } from "lucide-react";
 import { useState } from "react";
 import { ProductMedia } from "@/components/product/product-media";
 import { Price } from "@/components/providers/currency";
-import { searchEntries, type SearchEntry } from "@/lib/catalog/filter";
+import { searchEntries, searchSuggestions, type SearchEntry } from "@/lib/catalog/filter";
 import { useOverlay } from "./use-overlay";
 
-const suggestions = ["Oud", "Rose", "Ambre", "Vanille", "Néroli", "Safran"];
+const chipClass =
+  "border border-ivory/20 px-4 py-2 text-sm text-ivory/80 transition-colors hover:border-champagne hover:text-ivory";
 
 type Props = { open: boolean; onClose: () => void; entries: SearchEntry[] };
 
@@ -28,6 +29,8 @@ function SearchPanel({ onClose, entries }: Omit<Props, "open">) {
   const [query, setQuery] = useState("");
   const results = searchEntries(entries, query);
   const shown = results.slice(0, 6);
+  const suggestions = searchSuggestions(entries);
+  const examples = suggestions.notes.slice(0, 3).map((n) => `« ${n.toLowerCase()} »`);
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -82,24 +85,36 @@ function SearchPanel({ onClose, entries }: Omit<Props, "open">) {
 
         <div className="mx-auto mt-10 max-w-3xl pb-16" aria-live="polite">
           {!query.trim() ? (
-            <div>
-              <p className="eyebrow text-mist">Suggestions</p>
-              <div className="mt-4 flex flex-wrap gap-2">
-                {suggestions.map((s) => (
-                  <button
-                    key={s}
-                    type="button"
-                    onClick={() => setQuery(s)}
-                    className="border border-ivory/20 px-4 py-2 text-sm text-ivory/80 transition-colors hover:border-champagne hover:text-ivory"
-                  >
-                    {s}
-                  </button>
-                ))}
-              </div>
+            <div className="space-y-8">
+              {entries.length > 0 && (
+                <div>
+                  <p className="eyebrow text-mist">Nos parfums</p>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {entries.map((e) => (
+                      <Link key={e.slug} href={`/parfums/${e.slug}`} onClick={onClose} className={chipClass}>
+                        {e.name}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {suggestions.tags.length + suggestions.notes.length > 0 && (
+                <div>
+                  <p className="eyebrow text-mist">Suggestions</p>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {[...suggestions.tags, ...suggestions.notes].map((s) => (
+                      <button key={s} type="button" onClick={() => setQuery(s)} className={chipClass}>
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           ) : shown.length === 0 ? (
             <p className="text-mist">
-              Aucun parfum ne correspond à « {query} ». Essayez une note comme « oud », « rose » ou « vanille ».
+              Aucun parfum ne correspond à « {query} ».
+              {examples.length > 0 && ` Essayez une note comme ${examples.join(", ")}.`}
             </p>
           ) : (
             <>
