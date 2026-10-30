@@ -4,7 +4,12 @@ export const site = {
   baseline: "Extraits de parfum",
   description:
     "ĆAAM, maison de parfum de luxe : des extraits de parfum de caractère pour elle, pour lui et pour les esprits libres. Entre Dakar et l'Europe.",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+  // Sur Vercel, l'adresse de production est fournie automatiquement si NEXT_PUBLIC_SITE_URL est absent.
+  url:
+    process.env.NEXT_PUBLIC_SITE_URL ??
+    (process.env.VERCEL_PROJECT_PRODUCTION_URL
+      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+      : "http://localhost:3000"),
   locations: "Dakar · Europe",
   social: {
     instagram: "https://www.instagram.com/caamleparfum/",

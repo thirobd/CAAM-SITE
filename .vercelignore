@@ -1,0 +1,7 @@
+# Jamais envoyé à Vercel : clés locales, dépendances et builds locaux.
+.env
+.env.local
+.env.*.local
+node_modules
+.next
+out
