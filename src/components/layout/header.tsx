@@ -65,14 +65,16 @@ export function Header({ searchEntries }: { searchEntries: SearchEntry[] }) {
             <Logo priority className="h-10 md:h-[52px]" />
           </Link>
 
-          <div className="flex items-center justify-end gap-1 md:gap-2">
+          {/* Sans espacement sur téléphone : recherche, profil et panier tiennent à côté du logo centré. */}
+          <div className="flex items-center justify-end md:gap-2">
             <div className="mr-3 hidden lg:block">
               <CurrencySwitcher />
             </div>
             <button type="button" className={cn(iconButton, "grid")} onClick={() => setSearchOpen(true)} aria-label="Rechercher un parfum">
               <Search className="size-5" strokeWidth={1.25} />
             </button>
-            <Link href="/compte" className={cn(iconButton, "hidden sm:grid")} aria-label="Mon compte">
+            {/* Espace propriétaire : page de connexion, ou tableau de bord si déjà connecté. */}
+            <Link href="/admin" prefetch={false} className={cn(iconButton, "grid")} aria-label="Espace propriétaire">
               <User className="size-5" strokeWidth={1.25} />
             </Link>
             <button
