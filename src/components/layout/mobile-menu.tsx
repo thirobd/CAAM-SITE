@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
 import { User, X } from "lucide-react";
-import { InstagramIcon, TikTokIcon } from "@/components/brand/social-icons";
+import { InstagramIcon, TikTokIcon, WhatsAppIcon } from "@/components/brand/social-icons";
 import { site } from "@/lib/site";
 import { CurrencySwitcher } from "./currency-switcher";
 import { mainNav } from "./nav-links";
@@ -67,6 +67,9 @@ export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => vo
               </a>
               <a href={site.social.tiktok} target="_blank" rel="noopener noreferrer" aria-label="ĆAAM sur TikTok" className="grid size-10 place-items-center text-ivory/80 hover:text-champagne">
                 <TikTokIcon className="size-5" />
+              </a>
+              <a href={site.social.whatsappCatalog} target="_blank" rel="noopener noreferrer" aria-label="Catalogue ĆAAM sur WhatsApp" className="grid size-10 place-items-center text-ivory/80 hover:text-champagne">
+                <WhatsAppIcon className="size-5" />
               </a>
             </div>
           </div>

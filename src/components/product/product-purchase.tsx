@@ -3,13 +3,15 @@
 import { AnimatePresence, motion } from "motion/react";
 import { Banknote, Check, Globe, Truck } from "lucide-react";
 import { useRef, useState } from "react";
+import { WhatsAppIcon } from "@/components/brand/social-icons";
 import { useCart } from "@/components/providers/cart";
 import { Price, useCurrency } from "@/components/providers/currency";
-import { Button } from "@/components/ui/button";
+import { Button, buttonClasses } from "@/components/ui/button";
 import { QuantityStepper } from "@/components/ui/quantity-stepper";
 import { defaultVariant, isAvailable, maxOrderable, stockStatus } from "@/lib/catalog/stock";
 import type { Product } from "@/lib/catalog/types";
 import { formatXof } from "@/lib/currency";
+import { whatsappUrl } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { StockBadge } from "./stock-badge";
 
@@ -25,6 +27,22 @@ export function ProductPurchase({ product }: { product: Product }) {
   const remaining = Math.max(0, maxOrderable(variant) - quantityOf(variant.id));
   const out = variant.stock <= 0;
   const qty = Math.max(1, Math.min(quantity, remaining || 1));
+
+  // Commande ou demande de disponibilité par WhatsApp, message prérempli avec le choix en cours.
+  const whatsappLink = (
+    <a
+      href={whatsappUrl(
+        out
+          ? `Bonjour ĆAAM, je souhaite être prévenu(e) du retour de ${product.name} (${variant.sizeMl} ml).`
+          : `Bonjour ĆAAM, je souhaite commander ${qty} × ${product.name} (${variant.sizeMl} ml).`,
+      )}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={buttonClasses("outline-dark", "lg", true)}
+    >
+      <WhatsAppIcon className="size-4" /> {out ? "Demander sur WhatsApp" : "Commander sur WhatsApp"}
+    </a>
+  );
 
   function selectVariant(id: string) {
     setVariantId(id);
@@ -81,6 +99,7 @@ export function ProductPurchase({ product }: { product: Product }) {
           <Button variant="ink" size="lg" full disabled>
             Épuisé
           </Button>
+          {whatsappLink}
           <p className="text-sm text-stone">
             {isAvailable(product)
               ? "Cette contenance est épuisée. Essayez l'autre format."
@@ -112,6 +131,7 @@ export function ProductPurchase({ product }: { product: Product }) {
               </AnimatePresence>
             </Button>
           </div>
+          {whatsappLink}
           {remaining === 0 && <p className="text-sm text-stone">Vous avez déjà la quantité maximale disponible dans votre panier.</p>}
         </div>
       )}

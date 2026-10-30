@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { Mail, Phone } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
-import { InstagramIcon, TikTokIcon } from "@/components/brand/social-icons";
+import { InstagramIcon, TikTokIcon, WhatsAppIcon } from "@/components/brand/social-icons";
 import { collections } from "@/lib/catalog/taxonomy";
-import { site } from "@/lib/site";
+import { site, whatsappUrl } from "@/lib/site";
 
 const columns = [
   {
@@ -72,11 +72,18 @@ export function Footer() {
                 <TikTokIcon className="size-4" /> @caam_leparfum
               </a>
             </li>
-            <li className="flex items-center gap-3 text-ivory/50">
-              <Mail className="size-4" strokeWidth={1.25} aria-hidden="true" /> E-mail à venir
+            <li>
+              <a href={site.social.whatsappCatalog} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 text-ivory/75 hover:text-ivory">
+                <WhatsAppIcon className="size-4" /> Catalogue WhatsApp
+              </a>
+            </li>
+            <li>
+              <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 text-ivory/75 hover:text-ivory">
+                <Phone className="size-4" strokeWidth={1.25} aria-hidden="true" /> {site.contact.phone}
+              </a>
             </li>
             <li className="flex items-center gap-3 text-ivory/50">
-              <Phone className="size-4" strokeWidth={1.25} aria-hidden="true" /> Téléphone à venir
+              <Mail className="size-4" strokeWidth={1.25} aria-hidden="true" /> E-mail à venir
             </li>
           </ul>
         </div>

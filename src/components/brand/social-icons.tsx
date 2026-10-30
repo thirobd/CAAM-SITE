@@ -20,3 +20,12 @@ export function TikTokIcon({ className, strokeWidth = 1.3 }: IconProps) {
     </svg>
   );
 }
+
+export function WhatsAppIcon({ className, strokeWidth = 1.3 }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinejoin="round" className={className} aria-hidden="true">
+      <path d="M3.5 20.5l1.3-4.2A8.5 8.5 0 1 1 8 19.4z" />
+      <path d="M9.2 8.4c-.3 1.1.1 2.6 1.4 4.1 1.4 1.5 3 2.2 4.2 2l.8-1.2-1.7-1.1-.9.6c-.8-.4-1.6-1.2-2-2l.6-.9-1.1-1.7z" />
+    </svg>
+  );
+}
