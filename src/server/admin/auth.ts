@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { loginEmail, safeAdminPath } from "@/lib/admin/login";
+import { fallbackLoginEmail, safeAdminPath } from "@/lib/admin/login";
 import { createSessionClient, isSupabaseConfigured } from "@/lib/supabase/session";
 
 export type LoginState = { error?: string; identifier?: string };
@@ -13,7 +13,12 @@ export async function signIn(_prev: LoginState, formData: FormData): Promise<Log
   if (!isSupabaseConfigured()) return { error: "La base de données n'est pas configurée.", identifier };
 
   const supabase = await createSessionClient();
-  const { data, error } = await supabase.auth.signInWithPassword({ email: loginEmail(identifier), password });
+  let email = fallbackLoginEmail(identifier);
+  if (!identifier.includes("@")) {
+    const { data: found } = await supabase.rpc("admin_login_email", { p_username: identifier });
+    if (typeof found === "string" && found) email = found;
+  }
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
   if (error || !data.user) {
     const tooMany = error?.status === 429 || error?.code === "over_request_rate_limit";
     return {
