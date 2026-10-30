@@ -63,8 +63,8 @@ export function OrderConfirmation({ order, onSend }: { order: Order; onSend: () 
       </div>
 
       <div role="note" className="mx-auto mt-8 max-w-xl border border-ink/15 bg-paper px-5 py-4 text-left text-sm leading-relaxed text-ink">
-        Votre commande n&apos;est transmise à ĆAAM qu&apos;une fois le message <strong className="font-normal">envoyé dans WhatsApp</strong>. Aucun
-        paiement n&apos;a été effectué sur ce site. WhatsApp ne s&apos;ouvre pas ? Écrivez au {site.contact.phone} en indiquant la référence{" "}
+        ĆAAM confirme votre commande après réception de votre <strong className="font-normal">message WhatsApp</strong> : pensez à l&apos;envoyer.
+        Aucun paiement n&apos;a été effectué sur ce site. WhatsApp ne s&apos;ouvre pas ? Écrivez au {site.contact.phone} en indiquant la référence{" "}
         {order.reference}.
       </div>
 

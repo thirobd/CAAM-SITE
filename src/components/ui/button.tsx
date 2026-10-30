@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
-type Variant = "gold" | "ink" | "outline-light" | "outline-dark";
+type Variant = "gold" | "ink" | "outline-light" | "outline-dark" | "danger";
 type Size = "md" | "lg";
 
 const base =
@@ -12,6 +12,7 @@ const variants: Record<Variant, string> = {
   ink: "bg-ink text-ivory hover:bg-gold-deep",
   "outline-light": "border border-ivory/40 text-ivory hover:border-ivory hover:bg-ivory hover:text-ink",
   "outline-dark": "border border-ink/30 text-ink hover:border-ink hover:bg-ink hover:text-ivory",
+  danger: "bg-danger text-ivory hover:bg-ink",
 };
 
 const sizes: Record<Size, string> = {

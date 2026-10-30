@@ -5,7 +5,7 @@ import { Reveal } from "@/components/motion/reveal";
 import { ButtonLink } from "@/components/ui/button";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { site } from "@/lib/site";
-import mark from "../../../public/brand/caam-mark.png";
+import mark from "../../../../public/brand/caam-mark.png";
 
 export const metadata: Metadata = {
   title: "Notre histoire",

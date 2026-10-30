@@ -2,6 +2,7 @@
 
 import { findVariant } from "@/lib/catalog/repository";
 import { MAX_PER_ORDER } from "@/lib/catalog/stock";
+import { getSupabase } from "@/lib/supabase/server";
 import {
   validateCheckout,
   type CheckoutFields,
@@ -14,12 +15,10 @@ import { countries, estimateDelivery } from "@/lib/delivery";
 
 /**
  * Prépare une commande à envoyer par WhatsApp.
- * Valide le formulaire et vérifie les prix et le stock en direct dans le catalogue, puis renvoie
- * la commande et sa référence. Le site n'enregistre rien et ne débite rien : c'est le client qui
- * transmet la commande à ĆAAM en envoyant le message WhatsApp prérempli.
- *
- * Phase 4 : enregistrer la commande dans Supabase (insertion + décrément du stock)
- * avant l'envoi, puis brancher le prestataire de paiement.
+ * Valide le formulaire, vérifie les prix et le stock en direct dans le catalogue, enregistre la
+ * commande (statut « nouvelle », visible dans /admin/commandes) puis renvoie la commande et sa
+ * référence. Rien n'est débité : le client transmet la commande en envoyant le message WhatsApp,
+ * et le stock n'est retiré que lorsque ĆAAM confirme la commande.
  */
 export async function placeOrder(input: CheckoutFields, items: CheckoutItem[]): Promise<PlaceOrderResult> {
   // Les arguments d'une action serveur viennent du navigateur : on les normalise avant tout.
@@ -67,17 +66,47 @@ export async function placeOrder(input: CheckoutFields, items: CheckoutItem[]): 
 
   const subtotalXof = lines.reduce((sum, l) => sum + l.unitPriceXof * l.quantity, 0);
   const delivery = estimateDelivery(fields.country, fields.city);
+  const countryLabel = countries.find((c) => c.code === fields.country)?.label ?? fields.country;
+
+  // Enregistrement pour l'espace propriétaire. La base relit elle-même prix et stock.
+  let reference = `CAAM-${crypto.randomUUID().slice(0, 6).toUpperCase()}`;
+  const supabase = process.env.CATALOG_SOURCE === "demo" ? null : getSupabase();
+  if (supabase) {
+    const { data, error } = await supabase.rpc("place_order", {
+      p_customer: {
+        name: fields.fullName,
+        phone: fields.phone,
+        country: countryLabel,
+        city: fields.city,
+        address: fields.address,
+        notes: fields.notes,
+        payment_method: fields.paymentMethod,
+      },
+      p_items: items.map((i) => ({ variant_id: String(i.variantId), quantity: Number(i.quantity) })),
+      p_delivery_label: delivery.label,
+      p_delivery_fee_xof: delivery.feeXof,
+    });
+    if (error) {
+      if (/Stock insuffisant|Article indisponible/.test(error.message)) {
+        return { ok: false, message: "Un article vient d'être épuisé. Actualisez la page et vérifiez votre panier." };
+      }
+      // La commande reste possible par WhatsApp même si l'enregistrement échoue.
+      console.error("Commande non enregistrée :", error.message);
+    } else if (typeof data === "string") {
+      reference = data;
+    }
+  }
 
   return {
     ok: true,
     order: {
-      reference: `CAAM-${crypto.randomUUID().slice(0, 6).toUpperCase()}`,
+      reference,
       createdAt: new Date().toISOString(),
       customerName: fields.fullName.trim(),
       phone: fields.phone.trim(),
       address: fields.address.trim(),
       city: fields.city.trim(),
-      countryLabel: countries.find((c) => c.code === fields.country)?.label ?? fields.country,
+      countryLabel,
       notes: fields.notes.trim(),
       paymentMethod: fields.paymentMethod as PaymentMethod,
       lines,
