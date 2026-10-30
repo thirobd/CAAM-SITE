@@ -9,8 +9,9 @@ export default function ConfidentialitePage() {
     <ContentPage eyebrow="Informations légales" title="Politique de confidentialité" intro="Modèle à compléter et à faire valider avant la mise en ligne.">
       <h2>Données collectées</h2>
       <p>
-        Lors d&apos;une commande : nom, téléphone, adresse de livraison et instructions éventuelles. <strong>Dans la version actuelle (prototype), ces
-        données ne sont ni enregistrées ni transmises.</strong>
+        Lors d&apos;une commande : nom, téléphone, adresse de livraison et instructions éventuelles. <strong>Ces informations ne sont pas enregistrées
+        par le site</strong> : elles sont insérées dans un message WhatsApp que vous envoyez vous-même à ĆAAM, pour le traitement de votre commande.
+        Ce message est soumis aux conditions et à la politique de confidentialité de WhatsApp.
       </p>
       <h2>Stockage dans votre navigateur</h2>
       <p>

@@ -1,5 +1,6 @@
 // Types et validation du formulaire de commande, partagés entre navigateur et serveur.
 
+import { formatMoney, formatXof } from "./currency";
 import { isCountryCode } from "./delivery";
 
 export type PaymentMethod = "cash" | "mobile-money" | "card";
@@ -13,12 +14,12 @@ export const paymentMethods: { id: PaymentMethod; label: string; detail: string 
   {
     id: "mobile-money",
     label: "Mobile Money",
-    detail: "Wave ou Orange Money. Le lien de paiement n'est pas encore activé.",
+    detail: "Wave ou Orange Money. ĆAAM vous indique la marche à suivre sur WhatsApp.",
   },
   {
     id: "card",
     label: "Carte bancaire",
-    detail: "Visa, Mastercard. Le paiement en ligne n'est pas encore activé.",
+    detail: "Visa, Mastercard. Pas de paiement sur le site : ĆAAM vous indique la marche à suivre.",
   },
 ];
 
@@ -62,21 +63,52 @@ export function validateCheckout(f: CheckoutFields): FieldErrors {
   return errors;
 }
 
-export type DemoOrderLine = { name: string; sizeMl: number; quantity: number; unitPriceXof: number };
+export type OrderLine = { name: string; sizeMl: number; quantity: number; unitPriceXof: number };
 
-export type DemoOrder = {
+/** Commande vérifiée par le serveur, transmise à ĆAAM par le client via WhatsApp. */
+export type Order = {
   reference: string;
   createdAt: string;
   customerName: string;
+  phone: string;
+  address: string;
   city: string;
   countryLabel: string;
+  notes: string;
   paymentMethod: PaymentMethod;
-  lines: DemoOrderLine[];
+  lines: OrderLine[];
   subtotalXof: number;
+  deliveryLabel: string;
   deliveryFeeXof: number | null;
   totalXof: number;
 };
 
 export type PlaceOrderResult =
-  | { ok: true; order: DemoOrder }
+  | { ok: true; order: Order }
   | { ok: false; message: string; fieldErrors?: FieldErrors };
+
+/** Texte du message WhatsApp envoyé à ĆAAM (gras WhatsApp entre astérisques). */
+export function orderMessage(order: Order): string {
+  const payment = paymentMethods.find((m) => m.id === order.paymentMethod)?.label ?? order.paymentMethod;
+  const delivery = order.deliveryFeeXof === null ? "sur devis" : formatXof(order.deliveryFeeXof);
+  const total = `${formatXof(order.totalXof)} (≈ ${formatMoney(order.totalXof, "EUR")})${order.deliveryFeeXof === null ? ", hors livraison" : ""}`;
+
+  return [
+    "Bonjour ĆAAM, je souhaite passer commande.",
+    "",
+    `*Référence : ${order.reference}*`,
+    "",
+    ...order.lines.map((l) => `• ${l.quantity} × ${l.name} (${l.sizeMl} ml) : ${formatXof(l.unitPriceXof * l.quantity)}`),
+    "",
+    `Sous-total : ${formatXof(order.subtotalXof)}`,
+    `Livraison (${order.deliveryLabel}) : ${delivery}`,
+    `*Total : ${total}*`,
+    "",
+    `Paiement souhaité : ${payment}`,
+    "",
+    `Nom : ${order.customerName}`,
+    `Téléphone : ${order.phone}`,
+    `Adresse : ${order.address}, ${order.city}, ${order.countryLabel}`,
+    ...(order.notes ? [`Instructions : ${order.notes}`] : []),
+  ].join("\n");
+}

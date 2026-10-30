@@ -6,21 +6,22 @@ import {
   validateCheckout,
   type CheckoutFields,
   type CheckoutItem,
-  type DemoOrderLine,
+  type OrderLine,
   type PaymentMethod,
   type PlaceOrderResult,
 } from "@/lib/checkout";
 import { countries, estimateDelivery } from "@/lib/delivery";
 
 /**
- * Commande de DÉMONSTRATION.
- * Valide le formulaire et vérifie les prix et le stock à partir du catalogue côté serveur,
- * puis renvoie une référence. RIEN n'est enregistré, envoyé ni débité.
+ * Prépare une commande à envoyer par WhatsApp.
+ * Valide le formulaire et vérifie les prix et le stock en direct dans le catalogue, puis renvoie
+ * la commande et sa référence. Le site n'enregistre rien et ne débite rien : c'est le client qui
+ * transmet la commande à ĆAAM en envoyant le message WhatsApp prérempli.
  *
- * Phase 4 : remplacer la fin de cette fonction par une transaction Supabase
- * (insertion de la commande + décrément du stock), puis brancher le prestataire de paiement.
+ * Phase 4 : enregistrer la commande dans Supabase (insertion + décrément du stock)
+ * avant l'envoi, puis brancher le prestataire de paiement.
  */
-export async function placeDemoOrder(input: CheckoutFields, items: CheckoutItem[]): Promise<PlaceOrderResult> {
+export async function placeOrder(input: CheckoutFields, items: CheckoutItem[]): Promise<PlaceOrderResult> {
   // Les arguments d'une action serveur viennent du navigateur : on les normalise avant tout.
   const str = (v: unknown) => (typeof v === "string" ? v : "");
   const fields: CheckoutFields = {
@@ -40,7 +41,7 @@ export async function placeDemoOrder(input: CheckoutFields, items: CheckoutItem[
     return { ok: false, message: "Votre panier est vide." };
   }
 
-  const lines: DemoOrderLine[] = [];
+  const lines: OrderLine[] = [];
   for (const item of items) {
     const found = await findVariant(String(item.variantId));
     const quantity = Number(item.quantity);
@@ -67,20 +68,21 @@ export async function placeDemoOrder(input: CheckoutFields, items: CheckoutItem[
   const subtotalXof = lines.reduce((sum, l) => sum + l.unitPriceXof * l.quantity, 0);
   const delivery = estimateDelivery(fields.country, fields.city);
 
-  // Petit délai pour rendre perceptible l'état « traitement en cours » de la démo.
-  await new Promise((resolve) => setTimeout(resolve, 600));
-
   return {
     ok: true,
     order: {
-      reference: `CAAM-DEMO-${crypto.randomUUID().slice(0, 6).toUpperCase()}`,
+      reference: `CAAM-${crypto.randomUUID().slice(0, 6).toUpperCase()}`,
       createdAt: new Date().toISOString(),
       customerName: fields.fullName.trim(),
+      phone: fields.phone.trim(),
+      address: fields.address.trim(),
       city: fields.city.trim(),
       countryLabel: countries.find((c) => c.code === fields.country)?.label ?? fields.country,
+      notes: fields.notes.trim(),
       paymentMethod: fields.paymentMethod as PaymentMethod,
       lines,
       subtotalXof,
+      deliveryLabel: delivery.label,
       deliveryFeeXof: delivery.feeXof,
       totalXof: subtotalXof + (delivery.feeXof ?? 0),
     },

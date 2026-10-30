@@ -37,8 +37,8 @@ export default function LivraisonPage() {
 
       <h2>Paiement</h2>
       <p>
-        Au Sénégal, le paiement à la livraison est proposé. Le paiement par Mobile Money (Wave, Orange Money) et par carte bancaire sera disponible
-        prochainement. <strong>Le paiement en ligne n&apos;est pas encore activé sur ce site.</strong>
+        Les commandes sont confirmées par WhatsApp. Au Sénégal, le paiement à la livraison est proposé ; pour le Mobile Money (Wave, Orange Money)
+        ou la carte bancaire, ĆAAM vous indique la marche à suivre. <strong>Le paiement en ligne n&apos;est pas encore activé sur ce site.</strong>
       </p>
 
       <h2>Expéditions internationales</h2>

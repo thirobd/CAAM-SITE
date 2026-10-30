@@ -16,8 +16,8 @@ export type CartLine = {
   image?: string;
 };
 
-// v3 : identifiants de contenance issus de Supabase (les anciens paniers sont ignorés).
-const STORAGE_KEY = "caam-cart-v3";
+// v4 : catalogue réel (les paniers contenant les parfums de démonstration sont ignorés).
+const STORAGE_KEY = "caam-cart-v4";
 const EMPTY: CartLine[] = [];
 
 let lines: CartLine[] | null = null;

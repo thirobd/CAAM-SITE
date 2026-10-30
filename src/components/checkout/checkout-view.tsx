@@ -1,7 +1,8 @@
 "use client";
 
-import { AlertCircle, Banknote, CreditCard, Info, LoaderCircle, ShoppingBag, Smartphone } from "lucide-react";
+import { AlertCircle, Banknote, CreditCard, LoaderCircle, ShoppingBag, Smartphone } from "lucide-react";
 import { useState, useTransition } from "react";
+import { WhatsAppIcon } from "@/components/brand/social-icons";
 import { useCart } from "@/components/providers/cart";
 import { Button, ButtonLink } from "@/components/ui/button";
 import {
@@ -9,14 +10,14 @@ import {
   paymentMethods,
   validateCheckout,
   type CheckoutFields,
-  type DemoOrder,
   type FieldErrors,
+  type Order,
   type PaymentMethod,
 } from "@/lib/checkout";
 import { countries, estimateDelivery } from "@/lib/delivery";
 import { useHydrated } from "@/lib/use-hydrated";
 import { cn } from "@/lib/utils";
-import { placeDemoOrder } from "@/server/orders";
+import { placeOrder } from "@/server/orders";
 import { Field } from "./field";
 import { OrderConfirmation } from "./order-confirmation";
 import { OrderSummary } from "./order-summary";
@@ -34,7 +35,7 @@ export function CheckoutView() {
   const [fields, setFields] = useState<CheckoutFields>(emptyCheckout);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
-  const [order, setOrder] = useState<DemoOrder | null>(null);
+  const [order, setOrder] = useState<Order | null>(null);
   const [pending, startTransition] = useTransition();
   const hydrated = useHydrated();
 
@@ -71,13 +72,13 @@ export function CheckoutView() {
     }
     startTransition(async () => {
       try {
-        const result = await placeDemoOrder(
+        const result = await placeOrder(
           fields,
           lines.map((l) => ({ variantId: l.variantId, quantity: l.quantity })),
         );
         if (result.ok) {
+          // Le panier est vidé seulement quand le client ouvre WhatsApp pour envoyer la commande.
           setOrder(result.order);
-          clear();
           window.scrollTo({ top: 0 });
         } else {
           setErrors(result.fieldErrors ?? {});
@@ -90,7 +91,7 @@ export function CheckoutView() {
     });
   }
 
-  if (order) return <OrderConfirmation order={order} />;
+  if (order) return <OrderConfirmation order={order} onSend={clear} />;
 
   // Le panier vit dans le navigateur : on attend de l'avoir lu avant de conclure qu'il est vide.
   if (!hydrated) {
@@ -123,11 +124,12 @@ export function CheckoutView() {
   return (
     <>
       <h1 className="font-serif text-5xl font-light md:text-6xl">Commande</h1>
-      <div role="note" className="mt-6 flex gap-3 border border-warning/40 bg-warning/5 px-5 py-4 text-sm leading-relaxed">
-        <Info className="mt-0.5 size-4 shrink-0 text-warning" strokeWidth={1.5} aria-hidden="true" />
+      <div role="note" className="mt-6 flex gap-3 border border-ink/15 bg-paper px-5 py-4 text-sm leading-relaxed">
+        <WhatsAppIcon className="mt-0.5 size-4 shrink-0 text-gold-deep" />
         <p>
-          <strong className="font-normal">Version de démonstration.</strong> Le paiement en ligne n&apos;est pas encore connecté : aucune commande ne sera
-          transmise et aucune somme ne sera débitée.
+          <strong className="font-normal">Commande par WhatsApp.</strong> Après vérification, votre commande s&apos;ouvre dans WhatsApp, déjà rédigée :
+          il vous suffit de l&apos;envoyer. ĆAAM vous répond pour confirmer la disponibilité, le paiement et la livraison. Aucun paiement n&apos;est
+          demandé sur ce site.
         </p>
       </div>
 
@@ -228,13 +230,13 @@ export function CheckoutView() {
             <Button type="submit" variant="ink" size="lg" full disabled={pending}>
               {pending ? (
                 <>
-                  <LoaderCircle className="size-4 animate-spin" strokeWidth={1.5} aria-hidden="true" /> Validation en cours…
+                  <LoaderCircle className="size-4 animate-spin" strokeWidth={1.5} aria-hidden="true" /> Vérification en cours…
                 </>
               ) : (
-                "Valider la commande (démo)"
+                "Continuer vers WhatsApp"
               )}
             </Button>
-            <p className="text-center text-xs text-stone">Aucun paiement ne sera demandé à cette étape.</p>
+            <p className="text-center text-xs text-stone">Vous relirez votre commande avant de l&apos;envoyer.</p>
           </div>
         </form>
 

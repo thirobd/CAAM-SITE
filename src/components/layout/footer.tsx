@@ -92,7 +92,7 @@ export function Footer() {
       <div className="border-t border-ivory/10">
         <div className="container-luxe flex flex-col gap-2 py-6 text-xs tracking-wide text-ivory/50 md:flex-row md:justify-between">
           <span>© {new Date().getFullYear()} ĆAAM. Tous droits réservés.</span>
-          <span>Stocks indicatifs. Commandes par WhatsApp : la commande en ligne n&apos;est pas encore active.</span>
+          <span>Stocks indicatifs. Commandes confirmées par WhatsApp, sans paiement en ligne.</span>
         </div>
       </div>
     </footer>
