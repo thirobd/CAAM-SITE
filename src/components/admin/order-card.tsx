@@ -124,7 +124,6 @@ export function OrderCard({ order }: { order: AdminOrder }) {
                 onClick={() => changeStatus(s.id)}
                 disabled={pending}
                 aria-pressed={status === s.id}
-                title={s.hint}
                 className={cn(
                   "inline-flex h-10 items-center gap-2 border px-4 text-[12px] uppercase tracking-[0.16em] transition-colors disabled:cursor-wait",
                   status === s.id ? "border-ink bg-ink text-ivory" : "border-ink/20 hover:border-ink",

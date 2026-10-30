@@ -39,9 +39,11 @@ function sortVariants(p: AdminProduct): AdminProduct {
 }
 
 export async function listAdminProducts({ supabase }: AdminSession): Promise<AdminProduct[]> {
+  // Parfums publiés d'abord, puis dans l'ordre d'affichage de la boutique.
   const { data, error } = await supabase
     .from("products")
     .select(SELECT)
+    .order("is_published", { ascending: false })
     .order("position", { ascending: true })
     .order("name", { ascending: true });
   if (error) throw new Error(`Catalogue indisponible : ${error.message}`);

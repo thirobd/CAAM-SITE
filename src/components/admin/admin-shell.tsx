@@ -27,23 +27,20 @@ export function AdminShell({ username, newOrders, children }: Props) {
             <Logo className="h-8" />
             <span className="eyebrow hidden text-champagne sm:inline">Espace propriétaire</span>
           </Link>
-          <div className="flex items-center gap-1 text-sm">
+          {/* Libellés toujours visibles : une icône seule se touche trop facilement par erreur au téléphone. */}
+          <div className="flex items-center gap-1 text-[13px]">
             <span className="mr-2 hidden text-mist md:inline">{username}</span>
             <a
               href="/"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex h-10 items-center gap-2 px-3 text-ivory/80 hover:text-ivory"
+              className="inline-flex h-10 items-center gap-2 px-2 text-ivory/80 hover:text-ivory sm:px-3"
             >
-              <ExternalLink className="size-4" strokeWidth={1.5} aria-hidden="true" />
-              <span className="hidden sm:inline">Voir le site</span>
-              <span className="sr-only sm:hidden">Voir le site</span>
+              <ExternalLink className="size-4" strokeWidth={1.5} aria-hidden="true" /> Site
             </a>
-            <form action={signOut}>
-              <button type="submit" className="inline-flex h-10 items-center gap-2 px-3 text-ivory/80 hover:text-ivory">
-                <LogOut className="size-4" strokeWidth={1.5} aria-hidden="true" />
-                <span className="hidden sm:inline">Déconnexion</span>
-                <span className="sr-only sm:hidden">Déconnexion</span>
+            <form action={signOut} className="ml-1 border-l border-ivory/15 pl-1">
+              <button type="submit" className="inline-flex h-10 items-center gap-2 px-2 text-ivory/80 hover:text-ivory sm:px-3">
+                <LogOut className="size-4" strokeWidth={1.5} aria-hidden="true" /> Déconnexion
               </button>
             </form>
           </div>

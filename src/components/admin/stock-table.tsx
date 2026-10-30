@@ -38,7 +38,7 @@ function Row({ row }: { row: StockRow }) {
   const cell = cn(inputClass, "h-11 border-ink/20");
 
   return (
-    <li className="grid grid-cols-2 items-end gap-3 border-b border-ink/10 py-4 sm:grid-cols-[1.6fr_1fr_0.7fr_auto]">
+    <li className="grid grid-cols-2 items-end gap-x-3 gap-y-6 border-b border-ink/10 pb-8 pt-4 sm:grid-cols-[1.6fr_1fr_0.7fr_auto]">
       <div className="col-span-2 sm:col-span-1">
         <p className="font-serif text-xl leading-tight">
           {row.productName} <span className="font-sans text-[13px] text-stone">· {row.sizeMl} ml</span>
@@ -49,8 +49,8 @@ function Row({ row }: { row: StockRow }) {
           {saved.stock === 0 ? <span className="text-danger"> · épuisé</span> : saved.stock <= LOW_STOCK_THRESHOLD && <span className="text-warning"> · stock faible</span>}
         </p>
       </div>
-      <label className="flex flex-col gap-1.5 text-[12px] text-stone">
-        Prix (FCFA){valid && <span className="text-[11px]">≈ {formatMoney(priceValue, "EUR")}</span>}
+      <label className="relative flex flex-col gap-1.5 text-[12px] text-stone">
+        Prix (FCFA)
         <input
           inputMode="numeric"
           value={price}
@@ -62,6 +62,8 @@ function Row({ row }: { row: StockRow }) {
           className={cell}
           aria-label={`Prix de ${row.productName} ${row.sizeMl} ml en FCFA`}
         />
+        {/* Sous le champ, hors du flux : les champs prix et stock restent alignés. */}
+        {valid && <span className="absolute -bottom-5 left-0 text-[11px]">≈ {formatMoney(priceValue, "EUR")}</span>}
       </label>
       <label className="flex flex-col gap-1.5 text-[12px] text-stone">
         Stock
