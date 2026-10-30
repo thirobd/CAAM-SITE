@@ -16,7 +16,8 @@ export type CartLine = {
   image?: string;
 };
 
-const STORAGE_KEY = "caam-cart-v2";
+// v3 : identifiants de contenance issus de Supabase (les anciens paniers sont ignorés).
+const STORAGE_KEY = "caam-cart-v3";
 const EMPTY: CartLine[] = [];
 
 let lines: CartLine[] | null = null;

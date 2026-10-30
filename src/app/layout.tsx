@@ -40,6 +40,10 @@ export const viewport: Viewport = {
   themeColor: "#0c0a08",
 };
 
+// Les pages sont régénérées au plus toutes les 60 s : prix et stocks modifiés dans Supabase
+// apparaissent sur le site en une minute maximum (la commande revérifie toujours en direct).
+export const revalidate = 60;
+
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const searchEntries = (await getProducts()).map(toSearchEntry);
 
