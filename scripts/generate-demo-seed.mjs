@@ -44,8 +44,8 @@ const sql = `-- ============================================================
 -- Généré par scripts/generate-demo-seed.mjs depuis src/lib/catalog/data.ts.
 -- Ne pas modifier à la main : relancer le script.
 --
--- À exécuter APRÈS la migration, dans Supabase > SQL Editor.
--- Peut être relancé sans risque : met à jour les parfums existants.
+-- ⚠ NE PAS EXÉCUTER SUR LA BASE EN LIGNE : ces parfums fictifs en ont été supprimés
+-- le 30/10/2026 au profit du catalogue réel (géré depuis /admin). Réservé à une base de test.
 -- ============================================================
 
 insert into public.products
