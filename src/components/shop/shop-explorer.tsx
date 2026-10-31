@@ -1,6 +1,7 @@
 "use client";
 
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence } from "motion/react";
+import * as m from "motion/react-m";
 import { Search, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { ProductCard } from "@/components/product/product-card";
@@ -164,10 +165,10 @@ export function ShopExplorer({ products, initial }: { products: Product[]; initi
           </button>
         </div>
       ) : (
-        <motion.ul layout className="mt-8 grid grid-cols-2 gap-x-4 gap-y-12 md:gap-x-6 lg:grid-cols-3 xl:grid-cols-4">
+        <m.ul layout className="mt-8 grid grid-cols-2 gap-x-4 gap-y-12 md:gap-x-6 lg:grid-cols-3 xl:grid-cols-4">
           <AnimatePresence mode="popLayout">
             {results.map((p, i) => (
-              <motion.li
+              <m.li
                 key={p.id}
                 layout
                 initial={{ opacity: 0, y: 24 }}
@@ -176,10 +177,10 @@ export function ShopExplorer({ products, initial }: { products: Product[]; initi
                 transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
               >
                 <ProductCard product={p} priority={i < 4} />
-              </motion.li>
+              </m.li>
             ))}
           </AnimatePresence>
-        </motion.ul>
+        </m.ul>
       )}
     </>
   );

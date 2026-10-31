@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion } from "motion/react";
+import * as m from "motion/react-m";
 import { Menu, Search, ShoppingBag, User } from "lucide-react";
 import { useCallback, useState } from "react";
 import { Logo } from "@/components/brand/logo";
@@ -54,7 +54,7 @@ export function Header({ searchEntries }: { searchEntries: SearchEntry[] }) {
                     )}
                   >
                     {item.label}
-                    {active && <motion.span layoutId="nav-underline" className="absolute inset-x-0 -bottom-0.5 h-px bg-champagne" />}
+                    {active && <m.span layoutId="nav-underline" className="absolute inset-x-0 -bottom-0.5 h-px bg-champagne" />}
                   </Link>
                 );
               })}
@@ -86,7 +86,7 @@ export function Header({ searchEntries }: { searchEntries: SearchEntry[] }) {
               <ShoppingBag className="size-5" strokeWidth={1.25} />
               {count > 0 && (
                 // La clé change à chaque ajout : la pastille rebondit pour confirmer l'action.
-                <motion.span
+                <m.span
                   key={pulse}
                   initial={{ scale: 1.6 }}
                   animate={{ scale: 1 }}
@@ -95,7 +95,7 @@ export function Header({ searchEntries }: { searchEntries: SearchEntry[] }) {
                   aria-hidden="true"
                 >
                   {count}
-                </motion.span>
+                </m.span>
               )}
             </button>
           </div>

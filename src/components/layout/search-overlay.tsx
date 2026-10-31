@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence } from "motion/react";
+import * as m from "motion/react-m";
 import { ArrowRight, Search, X } from "lucide-react";
 import { useState } from "react";
 import { ProductMedia } from "@/components/product/product-media";
@@ -40,7 +41,7 @@ function SearchPanel({ onClose, entries }: Omit<Props, "open">) {
   }
 
   return (
-    <motion.div
+    <m.div
       className="fixed inset-0 z-[70] overflow-y-auto bg-ink/[0.97] text-ivory backdrop-blur-md"
       role="dialog"
       aria-modal="true"
@@ -57,7 +58,7 @@ function SearchPanel({ onClose, entries }: Omit<Props, "open">) {
           </button>
         </div>
 
-        <motion.form
+        <m.form
           onSubmit={submit}
           role="search"
           className="mx-auto mt-6 max-w-3xl"
@@ -81,7 +82,7 @@ function SearchPanel({ onClose, entries }: Omit<Props, "open">) {
               className="w-full bg-transparent font-serif text-3xl font-light text-ivory outline-none placeholder:text-ivory/35 md:text-5xl"
             />
           </div>
-        </motion.form>
+        </m.form>
 
         <div className="mx-auto mt-10 max-w-3xl pb-16" aria-live="polite">
           {!query.trim() ? (
@@ -149,6 +150,6 @@ function SearchPanel({ onClose, entries }: Omit<Props, "open">) {
           )}
         </div>
       </div>
-    </motion.div>
+    </m.div>
   );
 }

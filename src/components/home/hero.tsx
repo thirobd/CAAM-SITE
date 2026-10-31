@@ -2,7 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { AnimatePresence, useReducedMotion } from "motion/react";
+import * as m from "motion/react-m";
+import { Pause, Play } from "lucide-react";
 import { useEffect, useState } from "react";
 import { BottleArt } from "@/components/product/bottle-art";
 import { ArrowLink, ButtonLink } from "@/components/ui/button";
@@ -25,41 +27,41 @@ export function Hero({ products }: { products: Product[] }) {
     <section className="grain relative overflow-hidden bg-ink text-ivory">
       <div className="container-luxe grid min-h-[calc(100svh-104px)] items-center gap-10 py-14 md:py-20 lg:grid-cols-[1.05fr_1fr] lg:gap-16">
         <div className="relative z-10 max-w-xl">
-          <motion.p
+          <m.p
             className="eyebrow text-champagne"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8 }}
           >
             Extraits de parfum · Dakar — Europe
-          </motion.p>
+          </m.p>
 
           <h1 className="mt-6 font-serif text-[3.6rem] font-light leading-[0.98] tracking-[-0.015em] sm:text-7xl xl:text-[6.2rem]">
             {lines.map((line, i) => (
               <span key={line.text} className="block overflow-hidden pb-[0.08em]">
-                <motion.span
+                <m.span
                   className={cn("block", line.accent && "italic text-champagne")}
                   initial={{ y: "105%" }}
                   animate={{ y: 0 }}
                   transition={{ duration: 1.1, ease, delay: 0.1 + i * 0.12 }}
                 >
                   {line.text}
-                </motion.span>
+                </m.span>
               </span>
             ))}
           </h1>
 
-          <motion.p
+          <m.p
             className="mt-8 max-w-md text-base leading-relaxed text-mist md:text-lg"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, ease, delay: 0.35 }}
           >
             Des signatures olfactives intenses, pour elle, pour lui et pour les esprits libres. Des parfums pensés pour laisser une empreinte.
-          </motion.p>
+          </m.p>
 
           {/* L'appel à l'action principal apparaît presque immédiatement. */}
-          <motion.div
+          <m.div
             className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-5"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -71,7 +73,7 @@ export function Hero({ products }: { products: Product[] }) {
             <ArrowLink href="/maison" className="text-ivory/85 hover:text-ivory">
               Notre histoire
             </ArrowLink>
-          </motion.div>
+          </m.div>
         </div>
 
         <HeroVisual products={products} />
@@ -86,26 +88,34 @@ function HeroVisual({ products }: { products: Product[] }) {
   // la fumée reste statique jusque-là, pour que serveur et navigateur rendent la même chose.
   const hydrated = useHydrated();
   const [index, setIndex] = useState(0);
+  // Défilement interrompu par le bouton pause, et le temps du survol ou du focus clavier.
+  const [paused, setPaused] = useState(false);
+  const [hovered, setHovered] = useState(false);
   const product = products[index];
+  const rotating = !reduce && !paused && products.length > 1;
 
   useEffect(() => {
-    if (reduce || products.length < 2) return;
+    if (!rotating || hovered) return;
     const timer = window.setInterval(() => setIndex((i) => (i + 1) % products.length), ROTATE_MS);
     return () => window.clearInterval(timer);
-  }, [reduce, products.length]);
+  }, [rotating, hovered, products.length]);
 
   if (!product) return null;
 
   return (
-    <motion.div
+    <m.div
       className="relative mx-auto w-full max-w-[470px]"
       initial={{ opacity: 0, scale: 0.97 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 1.4, ease }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onFocus={() => setHovered(true)}
+      onBlur={(e) => !e.currentTarget.contains(e.relatedTarget as Node | null) && setHovered(false)}
     >
       <div className="relative aspect-[4/5] max-h-[60svh] min-h-[380px] w-full overflow-hidden rounded-t-full border border-ivory/10">
         {/* Halo coloré qui suit le parfum affiché */}
-        <motion.div
+        <m.div
           className="absolute inset-0"
           animate={{
             background: `radial-gradient(ellipse at 50% 58%, color-mix(in srgb, ${product.tint} 55%, transparent) 0%, transparent 62%)`,
@@ -117,7 +127,7 @@ function HeroVisual({ products }: { products: Product[] }) {
         <Smoke animated={hydrated && !reduce} />
 
         <AnimatePresence mode="popLayout" initial={false}>
-          <motion.div
+          <m.div
             key={product.id}
             className="absolute inset-0 flex items-end justify-center pb-[7%]"
             initial={{ opacity: 0, y: 30, filter: "blur(6px)" }}
@@ -132,7 +142,7 @@ function HeroVisual({ products }: { products: Product[] }) {
             ) : (
               <BottleArt tint={product.tint} name={product.name} className="h-[64%] w-auto drop-shadow-[0_40px_50px_rgba(0,0,0,0.55)]" />
             )}
-          </motion.div>
+          </m.div>
         </AnimatePresence>
 
         {/* Photos suivantes chargées à l'avance : le fondu enchaîné reste fluide. */}
@@ -148,12 +158,23 @@ function HeroVisual({ products }: { products: Product[] }) {
       </div>
 
       <div className="mt-6 flex items-end justify-between gap-6">
-        <div aria-live="polite">
+        {/* Changement annoncé aux lecteurs d'écran seulement quand le défilement est arrêté (choix manuel). */}
+        <div aria-live={rotating ? "off" : "polite"}>
           <Link href={`/parfums/${product.slug}`} className="block font-serif text-3xl hover:text-champagne">
             {product.name}
           </Link>
         </div>
-        <div className="flex gap-1" role="group" aria-label="Choisir le parfum affiché">
+        <div className="flex items-center gap-1" role="group" aria-label="Choisir le parfum affiché">
+          {products.length > 1 && !reduce && (
+            <button
+              type="button"
+              onClick={() => setPaused((p) => !p)}
+              aria-label={paused ? "Reprendre le défilement des parfums" : "Mettre en pause le défilement des parfums"}
+              className="mr-1 grid size-8 place-items-center text-ivory/60 transition-colors hover:text-champagne"
+            >
+              {paused ? <Play className="size-3.5" strokeWidth={1.5} /> : <Pause className="size-3.5" strokeWidth={1.5} />}
+            </button>
+          )}
           {products.map((p, i) => (
             <button
               key={p.id}
@@ -168,7 +189,7 @@ function HeroVisual({ products }: { products: Product[] }) {
           ))}
         </div>
       </div>
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -188,7 +209,7 @@ function Smoke({ animated }: { animated: boolean }) {
       </defs>
       {paths.map((d, i) =>
         animated ? (
-          <motion.path
+          <m.path
             key={d}
             d={d}
             fill="none"

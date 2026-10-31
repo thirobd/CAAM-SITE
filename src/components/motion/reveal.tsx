@@ -1,6 +1,7 @@
 "use client";
 
-import { motion, type Variants } from "motion/react";
+import type { Variants } from "motion/react";
+import * as m from "motion/react-m";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -14,7 +15,7 @@ type RevealProps = {
 
 /** Apparition douce au défilement (une seule fois). Les transformations sont coupées si « réduire les animations » est actif. */
 export function Reveal({ children, className, delay = 0, y = 28, as = "div" }: RevealProps) {
-  const Tag = motion[as];
+  const Tag = m[as];
   return (
     <Tag
       className={className}
@@ -40,7 +41,7 @@ const item: Variants = {
 
 /** Conteneur dont les enfants <RevealItem> apparaissent en cascade. */
 export function RevealGroup({ children, className, as = "div" }: Omit<RevealProps, "delay" | "y">) {
-  const Tag = motion[as];
+  const Tag = m[as];
   return (
     <Tag className={className} variants={group} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.15 }}>
       {children}
@@ -49,7 +50,7 @@ export function RevealGroup({ children, className, as = "div" }: Omit<RevealProp
 }
 
 export function RevealItem({ children, className, as = "div" }: Omit<RevealProps, "delay" | "y">) {
-  const Tag = motion[as];
+  const Tag = m[as];
   return (
     <Tag className={className} variants={item}>
       {children}

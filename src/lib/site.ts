@@ -24,6 +24,11 @@ export const site = {
   },
 } as const;
 
+/** Adresse complète d'une page ou d'une image du site (référencement, partage). */
+export function absoluteUrl(path: string): string {
+  return /^https?:\/\//.test(path) ? path : `${site.url}${path.startsWith("/") ? "" : "/"}${path}`;
+}
+
 /** Lien de discussion WhatsApp avec ĆAAM, avec un message prérempli facultatif. */
 export function whatsappUrl(message?: string) {
   return `https://wa.me/${site.contact.whatsapp}${message ? `?text=${encodeURIComponent(message)}` : ""}`;

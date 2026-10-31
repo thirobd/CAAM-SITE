@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "motion/react";
+import * as m from "motion/react-m";
 import { Price } from "@/components/providers/currency";
 import { productStock, startingPrice, stockStatus } from "@/lib/catalog/stock";
 import { getCollection, getFamily } from "@/lib/catalog/taxonomy";
@@ -25,7 +25,7 @@ export function ProductCard({ product, tone = "light", rank, priority }: Props) 
     status === "out" ? "Épuisé" : product.isNew ? "Nouveau" : product.bestSellerRank && !rank ? "Best-seller" : null;
 
   return (
-    <motion.article
+    <m.article
       className="group relative h-full"
       whileHover={{ y: -6 }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
@@ -75,6 +75,6 @@ export function ProductCard({ product, tone = "light", rank, priority }: Props) 
           </div>
         </div>
       </Link>
-    </motion.article>
+    </m.article>
   );
 }

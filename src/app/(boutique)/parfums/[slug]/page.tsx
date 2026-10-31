@@ -10,6 +10,7 @@ import { getProductBySlug, getProducts, getRelatedProducts } from "@/lib/catalog
 import { getCollection, getFamily } from "@/lib/catalog/taxonomy";
 import { deliveryZones } from "@/lib/delivery";
 import { formatXof } from "@/lib/currency";
+import { absoluteUrl, site } from "@/lib/site";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -20,9 +21,41 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const product = await getProductBySlug((await params).slug);
   if (!product) return { title: "Parfum introuvable" };
+  const title = `${product.name} — ${product.concentration}`;
+  const description = `${product.tagline}. ${product.description}`;
+  const path = `/parfums/${product.slug}`;
+  // Partage (WhatsApp, Instagram…) : la photo du parfum plutôt que le logo.
+  const images = product.images[0] ? [{ url: absoluteUrl(product.images[0]), alt: product.name }] : undefined;
   return {
-    title: `${product.name} — ${product.concentration}`,
-    description: `${product.tagline}. ${product.description}`,
+    title,
+    description,
+    alternates: { canonical: path },
+    openGraph: { title, description, url: path, siteName: site.name, locale: "fr_SN", type: "website", images },
+    twitter: { card: "summary_large_image", title, description, images: images?.map((i) => i.url) },
+  };
+}
+
+/** Données produit lisibles par Google (prix, disponibilité) : https://schema.org/Product */
+function productJsonLd(product: NonNullable<Awaited<ReturnType<typeof getProductBySlug>>>) {
+  const url = absoluteUrl(`/parfums/${product.slug}`);
+  return {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    description: product.description || product.tagline,
+    image: product.images.map(absoluteUrl),
+    brand: { "@type": "Brand", name: product.brand },
+    category: product.concentration,
+    url,
+    offers: product.variants.map((v) => ({
+      "@type": "Offer",
+      sku: v.sku,
+      name: `${product.name} ${v.sizeMl} ml`,
+      price: v.priceXof,
+      priceCurrency: "XOF",
+      availability: v.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+      url,
+    })),
   };
 }
 
@@ -41,6 +74,11 @@ export default async function ProductPage({ params }: Props) {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        // Les « < » sont échappés : le contenu ne peut pas refermer la balise script.
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd(product)).replace(/</g, "\\u003c") }}
+      />
       <div className="container-luxe pt-6 md:pt-10">
         <nav aria-label="Fil d'Ariane" className="text-[11px] uppercase tracking-[0.2em] text-stone">
           <ol className="flex flex-wrap gap-2">

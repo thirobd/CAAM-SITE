@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence } from "motion/react";
+import * as m from "motion/react-m";
 import { ShoppingBag, Trash2, X } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { ProductMedia } from "@/components/product/product-media";
@@ -51,7 +52,7 @@ export function CartDrawer() {
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-[60]">
-          <motion.div
+          <m.div
             className="absolute inset-0 bg-ink/55 backdrop-blur-[2px]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -59,7 +60,7 @@ export function CartDrawer() {
             transition={{ duration: 0.4 }}
             onClick={closeCart}
           />
-          <motion.div
+          <m.div
             ref={panel}
             role="dialog"
             aria-modal="true"
@@ -94,7 +95,7 @@ export function CartDrawer() {
                 <ul className="flex-1 overflow-y-auto px-6">
                   <AnimatePresence initial={false}>
                     {lines.map((line) => (
-                      <motion.li
+                      <m.li
                         key={line.variantId}
                         layout
                         initial={{ opacity: 0, x: 24 }}
@@ -129,7 +130,7 @@ export function CartDrawer() {
                           </div>
                         </div>
                         <Price amountXof={line.unitPriceXof * line.quantity} className="text-sm" />
-                      </motion.li>
+                      </m.li>
                     ))}
                   </AnimatePresence>
                 </ul>
@@ -154,7 +155,7 @@ export function CartDrawer() {
                 </footer>
               </>
             )}
-          </motion.div>
+          </m.div>
         </div>
       )}
     </AnimatePresence>

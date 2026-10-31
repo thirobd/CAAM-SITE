@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence } from "motion/react";
+import * as m from "motion/react-m";
 import { User, X } from "lucide-react";
 import { InstagramIcon, TikTokIcon, WhatsAppIcon } from "@/components/brand/social-icons";
 import { site } from "@/lib/site";
@@ -17,7 +18,7 @@ export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => vo
   return (
     <AnimatePresence>
       {open && (
-        <motion.div
+        <m.div
           id="mobile-menu"
           role="dialog"
           aria-modal="true"
@@ -36,13 +37,13 @@ export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => vo
           </div>
 
           <nav aria-label="Navigation principale" className="container-luxe mt-6 flex-1">
-            <motion.ul
+            <m.ul
               initial="hidden"
               animate="visible"
               variants={{ visible: { transition: { staggerChildren: 0.07, delayChildren: 0.05 } } }}
             >
               {[{ href: "/", label: "Accueil" }, ...mainNav].map((item) => (
-                <motion.li
+                <m.li
                   key={item.href}
                   variants={{ hidden: { opacity: 0, y: 18 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease } } }}
                   className="border-b border-ivory/10"
@@ -50,9 +51,9 @@ export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => vo
                   <Link href={item.href} onClick={onClose} className="block py-5 font-serif text-4xl font-light">
                     {item.label}
                   </Link>
-                </motion.li>
+                </m.li>
               ))}
-            </motion.ul>
+            </m.ul>
 
             <Link href="/compte" onClick={onClose} className="mt-8 inline-flex items-center gap-3 text-sm text-ivory/80">
               <User className="size-4" strokeWidth={1.25} /> Mon compte
@@ -73,7 +74,7 @@ export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => vo
               </a>
             </div>
           </div>
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>
   );

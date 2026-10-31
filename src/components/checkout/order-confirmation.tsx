@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "motion/react";
+import * as m from "motion/react-m";
 import { Check } from "lucide-react";
 import { useState } from "react";
 import { WhatsAppIcon } from "@/components/brand/social-icons";
@@ -13,7 +13,7 @@ import { site, whatsappUrl } from "@/lib/site";
 export function OrderConfirmation({ order, onSend }: { order: Order; onSend: () => void }) {
   const [sent, setSent] = useState(false);
   const firstName = order.customerName.split(/\s+/)[0];
-  const payment = paymentMethods.find((m) => m.id === order.paymentMethod)?.label;
+  const payment = paymentMethods.find((method) => method.id === order.paymentMethod)?.label;
 
   function handleSend() {
     setSent(true);
@@ -21,20 +21,20 @@ export function OrderConfirmation({ order, onSend }: { order: Order; onSend: () 
   }
 
   return (
-    <motion.div
+    <m.div
       className="mx-auto max-w-2xl py-6 text-center"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
     >
-      <motion.span
+      <m.span
         className="mx-auto grid size-16 place-items-center rounded-full bg-ink text-champagne"
         initial={{ scale: 0.6 }}
         animate={{ scale: 1 }}
         transition={{ type: "spring", stiffness: 260, damping: 16, delay: 0.15 }}
       >
         {sent ? <Check className="size-7" strokeWidth={1.25} /> : <WhatsAppIcon className="size-7" strokeWidth={1.1} />}
-      </motion.span>
+      </m.span>
 
       <p className="eyebrow mt-8 text-gold-deep">{sent ? "Message prêt" : "Dernière étape"}</p>
       <h1 className="mt-4 font-serif text-5xl font-light md:text-6xl">
@@ -98,6 +98,6 @@ export function OrderConfirmation({ order, onSend }: { order: Order; onSend: () 
       <ButtonLink href="/boutique" variant="outline-dark" size="lg" className="mt-10">
         Retour à la boutique
       </ButtonLink>
-    </motion.div>
+    </m.div>
   );
 }

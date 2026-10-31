@@ -1,6 +1,7 @@
 "use client";
 
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence } from "motion/react";
+import * as m from "motion/react-m";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import type { Product } from "@/lib/catalog/types";
@@ -81,7 +82,7 @@ export function ProductGallery({ product }: { product: Product }) {
     >
       <div className="group relative aspect-[4/5] overflow-hidden bg-ivory-deep">
         <AnimatePresence initial={false}>
-          <motion.div
+          <m.div
             key={views[index].key}
             className="absolute inset-0"
             initial={{ opacity: 0, scale: 1.03 }}
@@ -92,7 +93,7 @@ export function ProductGallery({ product }: { product: Product }) {
             role="img"
           >
             {views[index].render(false)}
-          </motion.div>
+          </m.div>
         </AnimatePresence>
 
         {views.length > 1 && (

@@ -30,13 +30,17 @@ export default async function ShopPage({ searchParams }: Props) {
     sort: isSortKey(sort) ? sort : defaultFilters.sort,
   };
 
+  // Contenances réellement en vente (« 50 ml », « 50 ml et 100 ml »…), d'après le catalogue.
+  const sizes = [...new Set(products.flatMap((p) => p.variants.map((v) => v.sizeMl)))].sort((a, b) => a - b).map((s) => `${s} ml`);
+  const sizeText = sizes.length > 1 ? `${sizes.slice(0, -1).join(", ")} et ${sizes.at(-1)}` : sizes[0];
+
   return (
     <div className="container-luxe pb-24 pt-14 md:pt-20">
       <SectionHeading
         as="h1"
         eyebrow="Boutique"
         title="La collection"
-        description="Extraits de parfum en 50 ml et 100 ml. Prix en francs CFA."
+        description={`Extraits de parfum${sizeText ? ` en ${sizeText}` : ""}. Prix en francs CFA.`}
         className="mb-10 md:mb-14"
       />
       {/* La clé remonte l'explorateur quand on arrive avec d'autres filtres (lien du menu, recherche). */}

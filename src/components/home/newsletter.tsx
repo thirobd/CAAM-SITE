@@ -1,6 +1,7 @@
 "use client";
 
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence } from "motion/react";
+import * as m from "motion/react-m";
 import { Check } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -31,7 +32,7 @@ export function Newsletter() {
 
       <AnimatePresence mode="wait" initial={false}>
         {done ? (
-          <motion.p
+          <m.p
             key="done"
             role="status"
             className="mt-10 inline-flex items-center gap-3 text-ink"
@@ -40,9 +41,9 @@ export function Newsletter() {
           >
             <Check className="size-5 text-success" strokeWidth={1.5} />
             Merci ! Démo : votre adresse n&apos;a pas été enregistrée.
-          </motion.p>
+          </m.p>
         ) : (
-          <motion.form key="form" onSubmit={submit} noValidate className="mx-auto mt-10 max-w-lg" exit={{ opacity: 0, y: -8 }}>
+          <m.form key="form" onSubmit={submit} noValidate className="mx-auto mt-10 max-w-lg" exit={{ opacity: 0, y: -8 }}>
             <div className="flex flex-col gap-3 sm:flex-row">
               <label htmlFor="newsletter-email" className="sr-only">
                 Adresse e-mail
@@ -67,7 +68,7 @@ export function Newsletter() {
                 {error}
               </p>
             )}
-          </motion.form>
+          </m.form>
         )}
       </AnimatePresence>
     </div>

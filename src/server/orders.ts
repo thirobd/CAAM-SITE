@@ -93,6 +93,9 @@ export async function placeOrder(input: CheckoutFields, items: CheckoutItem[], r
       if (/Stock insuffisant|Article indisponible/.test(error.message)) {
         return { ok: false, message: "Un article vient d'être épuisé. Actualisez la page et vérifiez votre panier." };
       }
+      if (/Trop de commandes/.test(error.message)) {
+        return { ok: false, message: "Trop de commandes en peu de temps. Réessayez un peu plus tard, ou écrivez-nous directement sur WhatsApp." };
+      }
       // La commande reste possible par WhatsApp même si l'enregistrement échoue.
       console.error("Commande non enregistrée :", error.message);
     } else if (typeof data === "string") {

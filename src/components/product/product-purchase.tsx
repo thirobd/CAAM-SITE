@@ -1,6 +1,7 @@
 "use client";
 
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence } from "motion/react";
+import * as m from "motion/react-m";
 import { Banknote, Check, Globe, Truck } from "lucide-react";
 import { useRef, useState } from "react";
 import { WhatsAppIcon } from "@/components/brand/social-icons";
@@ -112,7 +113,7 @@ export function ProductPurchase({ product }: { product: Product }) {
             <QuantityStepper value={qty} max={Math.max(1, remaining)} onChange={setQuantity} label="Quantité" />
             <Button variant="ink" size="lg" full onClick={handleAdd} disabled={remaining === 0} className="relative overflow-hidden">
               <AnimatePresence mode="wait" initial={false}>
-                <motion.span
+                <m.span
                   key={added ? "added" : "add"}
                   className="inline-flex items-center gap-3"
                   initial={{ y: 14, opacity: 0 }}
@@ -127,7 +128,7 @@ export function ProductPurchase({ product }: { product: Product }) {
                   ) : (
                     "Ajouter au panier"
                   )}
-                </motion.span>
+                </m.span>
               </AnimatePresence>
             </Button>
           </div>
