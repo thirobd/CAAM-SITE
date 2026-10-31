@@ -2,7 +2,6 @@ import { BrandStory } from "@/components/home/brand-story";
 import { CollectionsTriptych } from "@/components/home/collections-triptych";
 import { FamiliesGrid } from "@/components/home/families-grid";
 import { Hero } from "@/components/home/hero";
-import { Newsletter } from "@/components/home/newsletter";
 import { RevealGroup, RevealItem } from "@/components/motion/reveal";
 import { ProductCard } from "@/components/product/product-card";
 import { ArrowLink } from "@/components/ui/button";
@@ -60,12 +59,6 @@ export default async function HomePage() {
 
       <section className="container-luxe py-20 md:py-32">
         <BrandStory />
-      </section>
-
-      <section className="border-t border-ink/10 bg-paper py-20 md:py-28">
-        <div className="container-luxe">
-          <Newsletter />
-        </div>
       </section>
     </>
   );
