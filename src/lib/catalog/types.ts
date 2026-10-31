@@ -35,6 +35,8 @@ export type Product = {
   brand: string;
   concentration: string;
   collection: CollectionId;
+  /** Autres collections où le parfum est aussi proposé (ex. un parfum mixte rangé « Pour elle » et « Esprits libres »). */
+  alsoIn?: CollectionId[];
   family: FamilyId;
   tagline: string;
   description: string;

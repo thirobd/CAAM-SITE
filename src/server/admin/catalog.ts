@@ -14,6 +14,7 @@ export type AdminProduct = {
   brand: string;
   concentration: string;
   collection: CollectionId;
+  also_in: CollectionId[] | null;
   family: FamilyId;
   tagline: string;
   description: string;
@@ -32,7 +33,7 @@ export type AdminProduct = {
 };
 
 const SELECT =
-  "id, slug, name, brand, concentration, collection, family, tagline, description, notes_top, notes_heart, notes_base, tint, images, featured, best_seller_rank, is_new, is_published, position, updated_at, product_variants (id, sku, size_ml, price_xof, stock)";
+  "id, slug, name, brand, concentration, collection, also_in, family, tagline, description, notes_top, notes_heart, notes_base, tint, images, featured, best_seller_rank, is_new, is_published, position, updated_at, product_variants (id, sku, size_ml, price_xof, stock)";
 
 function sortVariants(p: AdminProduct): AdminProduct {
   return { ...p, product_variants: [...p.product_variants].sort((a, b) => a.size_ml - b.size_ml) };
@@ -65,6 +66,7 @@ export function toProductInput(p: AdminProduct): ProductInput {
     brand: p.brand,
     concentration: p.concentration,
     collection: p.collection,
+    alsoIn: p.also_in ?? [],
     family: p.family,
     tagline: p.tagline,
     description: p.description,

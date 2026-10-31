@@ -6,7 +6,7 @@ import { Search, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { ProductCard } from "@/components/product/product-card";
 import { defaultFilters, filterProducts } from "@/lib/catalog/filter";
-import { collections, families, sortOptions } from "@/lib/catalog/taxonomy";
+import { collections, familiesIn, getFamily, inCollection, sortOptions } from "@/lib/catalog/taxonomy";
 import type { CatalogFilters, CollectionId, FamilyId, Product, SortKey } from "@/lib/catalog/types";
 import { cn } from "@/lib/utils";
 
@@ -33,6 +33,15 @@ export function ShopExplorer({ products, initial }: { products: Product[]; initi
   const results = useMemo(() => filterProducts(products, filters), [products, filters]);
   const isFiltered =
     filters.query.trim() !== "" || filters.collection !== null || filters.family !== null || filters.inStockOnly;
+  // Seulement les collections et familles présentes au catalogue (plus celle d'un lien reçu, pour rester affichable).
+  const collectionOptions = useMemo(
+    () => collections.filter((c) => c.id === initial.collection || products.some((p) => inCollection(p, c.id))),
+    [products, initial.collection],
+  );
+  const familyOptions = useMemo(() => {
+    const present = familiesIn(products);
+    return initial.family && !present.some((f) => f.id === initial.family) ? [...present, getFamily(initial.family)] : present;
+  }, [products, initial.family]);
 
   // Garde l'URL synchronisée (lien partageable) sans recharger la page.
   useEffect(() => {
@@ -47,7 +56,7 @@ export function ShopExplorer({ products, initial }: { products: Product[]; initi
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 md:mx-0 md:px-0" role="group" aria-label="Collection">
-              {[{ id: null, label: "Tous" }, ...collections].map((c) => {
+              {[{ id: null, label: "Tous" }, ...collectionOptions].map((c) => {
                 const active = filters.collection === c.id;
                 return (
                   <button
@@ -95,7 +104,7 @@ export function ShopExplorer({ products, initial }: { products: Product[]; initi
                 style={chevron}
               >
                 <option value="">Toutes les familles</option>
-                {families.map((f) => (
+                {familyOptions.map((f) => (
                   <option key={f.id} value={f.id}>
                     {f.label}
                   </option>

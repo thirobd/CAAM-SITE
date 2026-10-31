@@ -1,4 +1,24 @@
-// Informations de la marque. Les valeurs marquées « À COMPLÉTER » sont des espaces réservés.
+type LegalIdentity = {
+  /** Raison sociale et forme juridique (ex. « ĆAAM SARL »), ou nom de l'entrepreneur individuel. */
+  company: string;
+  /** Adresse du siège ou de l'établissement. */
+  address: string;
+  /** Immatriculation : NINEA et RCCM au Sénégal, SIREN en France… */
+  registration: string;
+  /** Personne responsable de la publication du site. */
+  publisher: string;
+};
+
+// Identité légale de l'éditeur, à compléter par ĆAAM : une valeur vide n'est pas affichée
+// (mentions légales, CGV, confidentialité).
+const legal: LegalIdentity = {
+  company: "",
+  address: "",
+  registration: "",
+  publisher: "",
+};
+
+// Informations de la marque.
 export const site = {
   name: "ĆAAM",
   baseline: "Extraits de parfum",
@@ -22,7 +42,18 @@ export const site = {
     // Même numéro au format international sans « + » ni espaces, pour les liens wa.me
     whatsapp: "33667799533",
   },
+  legal,
+  hosting: {
+    name: "Vercel Inc.",
+    address: "440 N Barranca Ave #4133, Covina, CA 91723, États-Unis",
+    url: "https://vercel.com",
+  },
+  /** Date de dernière mise à jour des pages légales. */
+  legalUpdatedAt: "31 octobre 2026",
 } as const;
+
+/** Nom du vendeur dans les textes légaux : la raison sociale si elle est renseignée, sinon la marque. */
+export const sellerName = legal.company || site.name;
 
 /** Adresse complète d'une page ou d'une image du site (référencement, partage). */
 export function absoluteUrl(path: string): string {

@@ -5,7 +5,7 @@ import { ProductCard } from "@/components/product/product-card";
 import { ArrowLink } from "@/components/ui/button";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { getProducts } from "@/lib/catalog/repository";
-import { collections } from "@/lib/catalog/taxonomy";
+import { collections, inCollection } from "@/lib/catalog/taxonomy";
 
 export const metadata: Metadata = {
   title: "Collections",
@@ -35,16 +35,20 @@ export default async function CollectionsPage() {
         </div>
       </section>
 
-      {collections.map((c, i) => {
-        const items = products.filter((p) => p.collection === c.id);
-        return (
+      {/* Une collection encore vide n'est pas affichée. */}
+      {collections
+        .map((c) => ({ c, items: products.filter((p) => inCollection(p, c.id)) }))
+        .filter(({ items }) => items.length > 0)
+        .map(({ c, items }, i) => (
           <section key={c.id} id={c.id} className={i % 2 ? "bg-paper py-20 md:py-28" : "py-20 md:py-28"}>
             <div className="container-luxe">
               <SectionHeading
                 eyebrow={c.tagline}
                 title={c.label}
                 description={c.description}
-                action={<ArrowLink href={`/boutique?collection=${c.id}`}>Voir les {items.length} parfums</ArrowLink>}
+                action={
+                  <ArrowLink href={`/boutique?collection=${c.id}`}>{items.length > 1 ? `Voir les ${items.length} parfums` : "Voir le parfum"}</ArrowLink>
+                }
                 className="mb-12"
               />
               <RevealGroup className="grid grid-cols-2 gap-x-4 gap-y-12 md:gap-x-6 lg:grid-cols-4">
@@ -56,8 +60,7 @@ export default async function CollectionsPage() {
               </RevealGroup>
             </div>
           </section>
-        );
-      })}
+        ))}
 
       <section className="bg-ivory-deep py-20 md:py-28">
         <div className="container-luxe">

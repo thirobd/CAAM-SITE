@@ -77,6 +77,56 @@ export async function signUpAccount(_prev: AuthState, formData: FormData): Promi
   redirect(safeReturnPath(formData.get("suite")));
 }
 
+export type ResetRequestState = { error?: string; email?: string; sent?: boolean };
+
+/**
+ * « Mot de passe oublié » : envoie un lien pour choisir un nouveau mot de passe.
+ * Supabase répond pareil que l'adresse ait un compte ou non : rien n'est révélé.
+ */
+export async function requestPasswordReset(_prev: ResetRequestState, formData: FormData): Promise<ResetRequestState> {
+  const email = text(formData, "email", 120).toLowerCase();
+  if (!isEmail(email)) return { email, error: "Indiquez l'adresse e-mail de votre compte." };
+  if (!isSupabaseConfigured()) return { email, error: "Les comptes ne sont pas encore disponibles." };
+
+  const origin = (await headers()).get("origin") ?? site.url;
+  const supabase = await createSessionClient();
+  const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${origin}/auth/reinitialisation` });
+  if (error) {
+    if (error.status === 429 || error.code === "over_email_send_rate_limit" || error.code === "over_request_rate_limit")
+      return { email, error: "Trop de demandes. Patientez quelques minutes, puis réessayez." };
+    console.error("Mot de passe oublié :", error.code ?? error.status, error.message);
+    return { email, error: "L'e-mail n'a pas pu être envoyé. Réessayez plus tard, ou écrivez-nous sur WhatsApp." };
+  }
+  return { email, sent: true };
+}
+
+export type PasswordState = { error?: string };
+
+/** Nouveau mot de passe, après le lien reçu par e-mail ou depuis « Mon compte ». */
+export async function updatePassword(_prev: PasswordState, formData: FormData): Promise<PasswordState> {
+  const password = String(formData.get("motdepasse") ?? "");
+  const confirmation = String(formData.get("confirmation") ?? "");
+  if (password.length < MIN_PASSWORD_LENGTH) return { error: `Mot de passe : ${MIN_PASSWORD_LENGTH} caractères minimum.` };
+  if (password !== confirmation) return { error: "Les deux mots de passe ne sont pas identiques." };
+  if (!isSupabaseConfigured()) return { error: "Les comptes ne sont pas encore disponibles." };
+
+  const supabase = await createSessionClient();
+  const { data: claims } = await supabase.auth.getClaims();
+  const userId = claims?.claims?.sub;
+  if (!userId) return { error: "Ce lien a expiré. Demandez un nouvel e-mail depuis « Mot de passe oublié »." };
+
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) {
+    if (error.code === "same_password") return { error: "Choisissez un mot de passe différent de l'ancien." };
+    if (error.code === "weak_password") return { error: authError(error) };
+    console.error("Changement de mot de passe :", error.code ?? error.status, error.message);
+    return { error: "Le changement a échoué. Réessayez." };
+  }
+
+  const { data: admin } = await supabase.from("admins").select("user_id").eq("user_id", userId).maybeSingle();
+  redirect(admin ? "/admin" : "/compte?mdp=modifie");
+}
+
 export async function signOutAccount() {
   if (isSupabaseConfigured()) {
     const supabase = await createSessionClient();

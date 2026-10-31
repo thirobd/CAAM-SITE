@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Fragment } from "react";
 import { Reveal, RevealGroup, RevealItem } from "@/components/motion/reveal";
 import { ProductCard } from "@/components/product/product-card";
 import { ProductGallery } from "@/components/product/product-gallery";
 import { ProductPurchase } from "@/components/product/product-purchase";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { getProductBySlug, getProducts, getRelatedProducts } from "@/lib/catalog/repository";
-import { getCollection, getFamily } from "@/lib/catalog/taxonomy";
+import { getCollection, getFamily, productCollections } from "@/lib/catalog/taxonomy";
 import { deliveryZones } from "@/lib/delivery";
 import { formatXof } from "@/lib/currency";
 import { absoluteUrl, site } from "@/lib/site";
@@ -106,8 +107,12 @@ export default async function ProductPage({ params }: Props) {
             </p>
             <h1 className="mt-4 font-serif text-5xl font-light leading-none md:text-7xl">{product.name}</h1>
             <p className="mt-3 text-sm text-stone">
-              <Link href={`/boutique?collection=${collection.id}`} className="underline-offset-4 hover:underline">{collection.label}</Link>
-              {" · "}
+              {productCollections(product).map((id) => (
+                <Fragment key={id}>
+                  <Link href={`/boutique?collection=${id}`} className="underline-offset-4 hover:underline">{getCollection(id).label}</Link>
+                  {" · "}
+                </Fragment>
+              ))}
               <Link href={`/boutique?famille=${family.id}`} className="underline-offset-4 hover:underline">{family.label}</Link>
             </p>
             <p className="mt-6 font-serif text-2xl italic leading-snug">{product.tagline}</p>

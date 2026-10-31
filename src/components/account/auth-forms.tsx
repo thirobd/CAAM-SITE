@@ -7,18 +7,18 @@ import { inputClass } from "@/components/checkout/field";
 import { Button } from "@/components/ui/button";
 import { MIN_PASSWORD_LENGTH } from "@/lib/account";
 import { cn } from "@/lib/utils";
-import { signInAccount, signUpAccount, type AuthState } from "@/server/account";
+import { requestPasswordReset, signInAccount, signUpAccount, type AuthState, type ResetRequestState } from "@/server/account";
 
-const field = cn(inputClass, "h-12 border-ink/20");
+export const field = cn(inputClass, "h-12 border-ink/20");
 
-function PasswordInput({ id, autoComplete }: { id: string; autoComplete: string }) {
+export function PasswordInput({ id, autoComplete, name = "motdepasse" }: { id: string; autoComplete: string; name?: string }) {
   const [visible, setVisible] = useState(false);
   return (
     <div className="relative">
       {/* Marge droite dédiée (pas de px-4 surchargé) : le texte ne passe pas sous l'œil. */}
       <input
         id={id}
-        name="motdepasse"
+        name={name}
         type={visible ? "text" : "password"}
         autoComplete={autoComplete}
         required
@@ -37,7 +37,7 @@ function PasswordInput({ id, autoComplete }: { id: string; autoComplete: string 
   );
 }
 
-function ErrorMessage({ message }: { message?: string }) {
+export function ErrorMessage({ message }: { message?: string }) {
   if (!message) return null;
   return (
     <p role="alert" className="flex items-start gap-3 bg-danger/10 px-4 py-3 text-sm text-danger">
@@ -47,7 +47,7 @@ function ErrorMessage({ message }: { message?: string }) {
   );
 }
 
-function Submit({ pending, label }: { pending: boolean; label: string }) {
+export function Submit({ pending, label }: { pending: boolean; label: string }) {
   return (
     <Button type="submit" variant="ink" size="lg" full disabled={pending}>
       {pending ? <LoaderCircle className="size-4 animate-spin" strokeWidth={1.5} aria-label="Patientez" /> : label}
@@ -55,7 +55,9 @@ function Submit({ pending, label }: { pending: boolean; label: string }) {
   );
 }
 
-function SignInForm({ next }: { next: string }) {
+const linkButton = "text-[13px] text-stone underline underline-offset-4 hover:text-ink";
+
+function SignInForm({ next, onForgot }: { next: string; onForgot: () => void }) {
   const [state, action, pending] = useActionState<AuthState, FormData>(signInAccount, {});
   return (
     <form action={action} className="space-y-5">
@@ -70,6 +72,52 @@ function SignInForm({ next }: { next: string }) {
       </label>
       <ErrorMessage message={state.error} />
       <Submit pending={pending} label="Se connecter" />
+      <p className="text-center">
+        <button type="button" onClick={onForgot} className={linkButton}>
+          Mot de passe oublié ?
+        </button>
+      </p>
+    </form>
+  );
+}
+
+function ForgotForm({ onBack }: { onBack: () => void }) {
+  const [state, action, pending] = useActionState<ResetRequestState, FormData>(requestPasswordReset, {});
+
+  if (state.sent) {
+    return (
+      <div className="space-y-6">
+        <div className="border border-success/40 bg-success/10 px-6 py-8 text-center">
+          <MailCheck className="mx-auto size-8 text-success" strokeWidth={1.25} aria-hidden="true" />
+          <p className="mt-4 font-serif text-2xl">Vérifiez votre boîte mail</p>
+          <p className="mt-2 text-[15px] text-stone">
+            Si un compte existe pour <strong className="font-normal text-ink">{state.email}</strong>, un lien pour choisir un nouveau mot de
+            passe vient d&apos;y être envoyé. Pensez à regarder dans les courriers indésirables.
+          </p>
+        </div>
+        <p className="text-center">
+          <button type="button" onClick={onBack} className={linkButton}>
+            Retour à la connexion
+          </button>
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <form action={action} className="space-y-5">
+      <p className="text-[15px] text-stone">Indiquez l&apos;adresse e-mail de votre compte : vous recevrez un lien pour choisir un nouveau mot de passe.</p>
+      <label className="flex flex-col gap-2 text-[13px] tracking-wide">
+        E-mail
+        <input name="email" type="email" autoComplete="email" required defaultValue={state.email} className={field} />
+      </label>
+      <ErrorMessage message={state.error} />
+      <Submit pending={pending} label="Recevoir le lien" />
+      <p className="text-center">
+        <button type="button" onClick={onBack} className={linkButton}>
+          Retour à la connexion
+        </button>
+      </p>
     </form>
   );
 }
@@ -125,13 +173,24 @@ function SignUpForm({ next }: { next: string }) {
   );
 }
 
-/** Connexion ou création de compte, en deux onglets. */
-export function AuthForms({ next }: { next: string }) {
-  const [tab, setTab] = useState<"connexion" | "inscription">("connexion");
+type Mode = "connexion" | "inscription" | "oubli";
+
+/** Connexion ou création de compte, en deux onglets ; « Mot de passe oublié » s'ouvre depuis la connexion. */
+export function AuthForms({ next, initialMode = "connexion" }: { next: string; initialMode?: Mode }) {
+  const [tab, setTab] = useState<Mode>(initialMode);
   const tabs = [
     { id: "connexion", label: "Se connecter" },
     { id: "inscription", label: "Créer un compte" },
   ] as const;
+
+  if (tab === "oubli") {
+    return (
+      <div className="mx-auto w-full max-w-md">
+        <h2 className="eyebrow mb-8 border-b border-ink/15 pb-4 text-center text-gold-deep">Mot de passe oublié</h2>
+        <ForgotForm onBack={() => setTab("connexion")} />
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto w-full max-w-md">
@@ -152,7 +211,9 @@ export function AuthForms({ next }: { next: string }) {
           </button>
         ))}
       </div>
-      <div role="tabpanel">{tab === "connexion" ? <SignInForm next={next} /> : <SignUpForm next={next} />}</div>
+      <div role="tabpanel">
+        {tab === "connexion" ? <SignInForm next={next} onForgot={() => setTab("oubli")} /> : <SignUpForm next={next} />}
+      </div>
     </div>
   );
 }

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { hasErrors, validateProduct, type ProductErrors, type ProductInput } from "@/lib/admin/product-input";
+import { isCollectionId } from "@/lib/catalog/taxonomy";
 import { requireAdmin } from "./session";
 
 export type SaveProductResult = { ok: true; id: string } | { ok: false; errors: ProductErrors };
@@ -20,6 +21,7 @@ function normalize(raw: ProductInput): ProductInput {
     brand: str(raw?.brand, 60),
     concentration: str(raw?.concentration, 60),
     collection: raw?.collection,
+    alsoIn: Array.isArray(raw?.alsoIn) ? [...new Set(raw.alsoIn.filter(isCollectionId))].filter((c) => c !== raw.collection) : [],
     family: raw?.family,
     tagline: str(raw?.tagline, 300),
     description: str(raw?.description, 4000),
@@ -70,6 +72,7 @@ export async function saveProduct(raw: ProductInput): Promise<SaveProductResult>
     brand: input.brand,
     concentration: input.concentration,
     collection: input.collection,
+    also_in: input.alsoIn,
     family: input.family,
     tagline: input.tagline,
     description: input.description,

@@ -1,4 +1,4 @@
-import { getCollection, getFamily } from "./taxonomy";
+import { getCollection, getFamily, inCollection, productCollections } from "./taxonomy";
 import { isAvailable, startingPrice } from "./stock";
 import type { CatalogFilters, Product } from "./types";
 
@@ -19,13 +19,13 @@ export function normalize(text: string): string {
     .trim();
 }
 
-/** Texte indexé pour la recherche : nom, accroche, collection, famille et notes. */
+/** Texte indexé pour la recherche : nom, accroche, collections, famille et notes. */
 export function searchText(p: Product): string {
   return normalize(
     [
       p.name,
       p.tagline,
-      getCollection(p.collection).label,
+      ...productCollections(p).map((c) => getCollection(c).label),
       getFamily(p.family).label,
       ...p.notes.top,
       ...p.notes.heart,
@@ -68,7 +68,7 @@ export function toSearchEntry(p: Product): SearchEntry {
     priceFromXof: startingPrice(p),
     available: isAvailable(p),
     text: searchText(p),
-    tags: [getCollection(p.collection).label, getFamily(p.family).label],
+    tags: [...productCollections(p).map((c) => getCollection(c).label), getFamily(p.family).label],
     notes: [...p.notes.top, ...p.notes.heart, ...p.notes.base],
   };
 }
@@ -96,7 +96,7 @@ export function filterProducts(products: Product[], f: CatalogFilters): Product[
   const result = products.filter(
     (p) =>
       matchesQuery(p, f.query) &&
-      (!f.collection || p.collection === f.collection) &&
+      (!f.collection || inCollection(p, f.collection)) &&
       (!f.family || p.family === f.family) &&
       (!f.inStockOnly || isAvailable(p)),
   );

@@ -286,7 +286,13 @@ export function CheckoutView() {
                 "Continuer vers WhatsApp"
               )}
             </Button>
-            <p className="text-center text-xs text-stone">Vous relirez votre commande avant de l&apos;envoyer.</p>
+            <p className="text-center text-xs text-stone">
+              Vous relirez votre commande avant de l&apos;envoyer. En la passant, vous acceptez nos{" "}
+              <Link href="/cgv" className="underline underline-offset-4">
+                conditions générales de vente
+              </Link>
+              .
+            </p>
           </div>
         </form>
 

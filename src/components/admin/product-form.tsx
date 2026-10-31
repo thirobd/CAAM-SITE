@@ -236,7 +236,15 @@ export function ProductForm({ initial }: { initial: ProductInput }) {
         <div className="grid gap-5 sm:grid-cols-2">
           <Field id="p-collection" label="Collection" required error={errors.collection}>
             {(f) => (
-              <select {...f} className={cn(f.className, "h-12")} value={p.collection} onChange={(e) => set("collection", e.target.value as CollectionId)}>
+              <select
+                {...f}
+                className={cn(f.className, "h-12")}
+                value={p.collection}
+                onChange={(e) => {
+                  const collection = e.target.value as CollectionId;
+                  setP((prev) => ({ ...prev, collection, alsoIn: prev.alsoIn.filter((c) => c !== collection) }));
+                }}
+              >
                 {collections.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.label}
@@ -263,6 +271,27 @@ export function ProductForm({ initial }: { initial: ProductInput }) {
             {(f) => <input {...f} className={cn(f.className, "h-12")} value={p.concentration} onChange={(e) => set("concentration", e.target.value)} />}
           </Field>
         </div>
+        <fieldset>
+          <legend className="text-[13px] tracking-wide">
+            Aussi visible dans <span className="text-stone">(facultatif, ex. un parfum mixte)</span>
+          </legend>
+          <div className="mt-2 flex flex-wrap gap-3">
+            {collections
+              .filter((c) => c.id !== p.collection)
+              .map((c) => (
+                <label key={c.id} className="flex cursor-pointer items-center gap-3 border border-ink/15 bg-paper px-4 py-3 text-[15px]">
+                  <input
+                    type="checkbox"
+                    checked={p.alsoIn.includes(c.id)}
+                    onChange={(e) => set("alsoIn", e.target.checked ? [...p.alsoIn, c.id] : p.alsoIn.filter((id) => id !== c.id))}
+                    className="size-4 accent-ink"
+                  />
+                  {c.label}
+                </label>
+              ))}
+          </div>
+          {errors.alsoIn && <p className="mt-2 text-sm text-danger">{errors.alsoIn}</p>}
+        </fieldset>
       </fieldset>
 
       <fieldset className="space-y-5">

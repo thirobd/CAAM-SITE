@@ -1,17 +1,17 @@
-import type { Collection, CollectionId, Family, FamilyId, SortKey } from "./types";
+import type { Collection, CollectionId, Family, FamilyId, Product, SortKey } from "./types";
 
 export const collections: Collection[] = [
   {
     id: "elle",
     label: "Pour elle",
     tagline: "Féminité affirmée",
-    description: "Des fleurs sculptées par l'ambre et le musc, pour une élégance qui ne passe pas inaperçue.",
+    description: "Des sillages doux et enveloppants, entre vanille et muscs, pour une élégance qui ne passe pas inaperçue.",
   },
   {
     id: "lui",
     label: "Pour lui",
     tagline: "Caractère et profondeur",
-    description: "Bois nobles, cuir et épices : des signatures intenses, taillées pour durer.",
+    description: "Épices fraîches, bois précieux et ambre : des signatures intenses, taillées pour durer.",
   },
   {
     id: "esprits-libres",
@@ -44,6 +44,22 @@ export function getCollection(id: CollectionId): Collection {
 
 export function getFamily(id: FamilyId): Family {
   return families.find((f) => f.id === id)!;
+}
+
+type InCollections = Pick<Product, "collection" | "alsoIn">;
+
+/** Collections où le parfum apparaît : la sienne d'abord, puis celles où il est aussi proposé. */
+export function productCollections(p: InCollections): CollectionId[] {
+  return [p.collection, ...(p.alsoIn ?? []).filter((c) => c !== p.collection)];
+}
+
+export function inCollection(p: InCollections, id: CollectionId): boolean {
+  return p.collection === id || (p.alsoIn?.includes(id) ?? false);
+}
+
+/** Familles représentées dans le catalogue, dans l'ordre de référence : les familles vides ne sont pas proposées. */
+export function familiesIn(products: Pick<Product, "family">[]): Family[] {
+  return families.filter((f) => products.some((p) => p.family === f.id));
 }
 
 export function isCollectionId(value: unknown): value is CollectionId {

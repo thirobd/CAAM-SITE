@@ -8,7 +8,7 @@ import { BottleArt } from "@/components/product/bottle-art";
 import { ButtonLink } from "@/components/ui/button";
 import { imageUrl } from "@/lib/catalog/mapper";
 import { LOW_STOCK_THRESHOLD } from "@/lib/catalog/stock";
-import { getCollection, getFamily } from "@/lib/catalog/taxonomy";
+import { getCollection, getFamily, productCollections } from "@/lib/catalog/taxonomy";
 import { formatXof } from "@/lib/currency";
 import { cn } from "@/lib/utils";
 import { listAdminProducts } from "@/server/admin/catalog";
@@ -49,7 +49,10 @@ export default async function AdminProductsPage() {
                     {p.name}
                   </Link>
                   <p className="text-[13px] text-stone">
-                    {getCollection(p.collection).label} · {getFamily(p.family).label}
+                    {productCollections({ collection: p.collection, alsoIn: p.also_in ?? [] })
+                      .map((c) => getCollection(c).label)
+                      .join(" + ")}{" "}
+                    · {getFamily(p.family).label}
                     {p.featured && " · Mis en avant"}
                     {p.is_new && " · Nouveau"}
                     {p.best_seller_rank && ` · Meilleure vente n° ${p.best_seller_rank}`}

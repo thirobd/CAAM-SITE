@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { AlertCircle, Eye, EyeOff, LoaderCircle } from "lucide-react";
 import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -70,6 +71,11 @@ export function LoginForm({ next }: { next: string }) {
           "Se connecter"
         )}
       </Button>
+      <p className="text-center">
+        <Link href="/compte?oubli" className="text-[13px] text-mist underline underline-offset-4 hover:text-ivory">
+          Mot de passe oublié ?
+        </Link>
+      </p>
     </form>
   );
 }

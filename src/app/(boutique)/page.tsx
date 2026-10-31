@@ -25,7 +25,7 @@ export default async function HomePage() {
           <SectionHeading
             eyebrow="Familles olfactives"
             title="Trouvez votre territoire"
-            description="Six univers, de la chaleur de l'ambre à la fraîcheur du néroli."
+            description="Chaque famille raconte une émotion. Choisissez la vôtre."
             className="mb-12 md:mb-16"
           />
           <FamiliesGrid products={products} />

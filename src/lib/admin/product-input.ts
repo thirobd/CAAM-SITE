@@ -22,6 +22,8 @@ export type ProductInput = {
   brand: string;
   concentration: string;
   collection: CollectionId;
+  /** Collections supplémentaires où le parfum est aussi proposé. */
+  alsoIn: CollectionId[];
   family: FamilyId;
   tagline: string;
   description: string;
@@ -51,6 +53,7 @@ export const emptyProduct: ProductInput = {
   brand: "ĆAAM",
   concentration: "Extrait de parfum",
   collection: "esprits-libres",
+  alsoIn: [],
   family: "ambre",
   tagline: "",
   description: "",
@@ -103,6 +106,7 @@ export function validateProduct(p: ProductInput): ProductErrors {
   if (!p.brand.trim()) errors.brand = "Indiquez la marque.";
   if (!p.concentration.trim()) errors.concentration = "Indiquez la concentration.";
   if (!isCollectionId(p.collection)) errors.collection = "Choisissez une collection.";
+  if (!p.alsoIn.every(isCollectionId)) errors.alsoIn = "Collection inconnue.";
   if (!isFamilyId(p.family)) errors.family = "Choisissez une famille olfactive.";
   if (p.tagline.length > 160) errors.tagline = "160 caractères maximum.";
   if (p.description.length > 2000) errors.description = "2 000 caractères maximum.";

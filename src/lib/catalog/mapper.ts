@@ -4,7 +4,7 @@ import { isCollectionId, isFamilyId } from "./taxonomy";
 import type { Product } from "./types";
 
 export const PRODUCT_SELECT =
-  "id, slug, name, brand, concentration, collection, family, tagline, description, notes_top, notes_heart, notes_base, tint, images, featured, best_seller_rank, is_new, added_at, product_variants (id, sku, size_ml, price_xof, stock)";
+  "id, slug, name, brand, concentration, collection, also_in, family, tagline, description, notes_top, notes_heart, notes_base, tint, images, featured, best_seller_rank, is_new, added_at, product_variants (id, sku, size_ml, price_xof, stock)";
 
 export type VariantRow = { id: string; sku: string; size_ml: number; price_xof: number; stock: number };
 
@@ -15,6 +15,7 @@ export type ProductRow = {
   brand: string;
   concentration: string;
   collection: string;
+  also_in: string[] | null;
   family: string;
   tagline: string;
   description: string;
@@ -46,6 +47,7 @@ export function fromRow(row: ProductRow): Product | null {
     brand: row.brand,
     concentration: row.concentration,
     collection: row.collection,
+    alsoIn: (row.also_in ?? []).filter(isCollectionId).filter((c) => c !== row.collection),
     family: row.family,
     tagline: row.tagline,
     description: row.description,

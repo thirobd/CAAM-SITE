@@ -1,12 +1,15 @@
 import Link from "next/link";
 import { RevealGroup, RevealItem } from "@/components/motion/reveal";
-import { families } from "@/lib/catalog/taxonomy";
+import { familiesIn } from "@/lib/catalog/taxonomy";
 import type { Product } from "@/lib/catalog/types";
+import { cn } from "@/lib/utils";
 
+/** Familles olfactives du catalogue. Une famille sans parfum n'est pas affichée. */
 export function FamiliesGrid({ products }: { products: Product[] }) {
+  const shown = familiesIn(products);
   return (
-    <RevealGroup as="div" className="grid grid-cols-2 border-l border-t border-ink/10 lg:grid-cols-3">
-      {families.map((f) => {
+    <RevealGroup as="div" className={cn("grid grid-cols-2 border-l border-t border-ink/10", shown.length >= 3 && "lg:grid-cols-3")}>
+      {shown.map((f) => {
         const count = products.filter((p) => p.family === f.id).length;
         return (
           <RevealItem key={f.id} className="border-b border-r border-ink/10">
@@ -21,7 +24,7 @@ export function FamiliesGrid({ products }: { products: Product[] }) {
                 <p className="mt-2 text-[15px] leading-relaxed text-stone">{f.description}</p>
               </div>
               <span className="eyebrow mt-auto text-gold-deep">
-                {count === 0 ? "Bientôt" : `${count} parfum${count > 1 ? "s" : ""}`}
+                {count} parfum{count > 1 ? "s" : ""}
                 <span aria-hidden="true" className="ml-2 inline-block transition-transform duration-500 group-hover:translate-x-1">→</span>
               </span>
             </Link>

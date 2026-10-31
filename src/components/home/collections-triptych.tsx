@@ -3,17 +3,25 @@ import Link from "next/link";
 import { RevealGroup, RevealItem } from "@/components/motion/reveal";
 import { BottleArt } from "@/components/product/bottle-art";
 import { sceneBackground } from "@/components/product/scene";
-import { collections } from "@/lib/catalog/taxonomy";
+import { collections, inCollection } from "@/lib/catalog/taxonomy";
 import type { Product } from "@/lib/catalog/types";
 import { cn } from "@/lib/utils";
 
 /** Trois grandes entrées : Pour elle, Pour lui, Esprits libres. */
 export function CollectionsTriptych({ products }: { products: Product[] }) {
+  // Un parfum proposé dans deux collections ne passe au premier plan que d'une seule carte.
+  const fronted = new Set<string>();
   return (
     <RevealGroup className="grid gap-4 md:grid-cols-3">
       {collections.map((c) => {
-        const items = products.filter((p) => p.collection === c.id);
-        const cover = items.find((p) => p.featured) ?? items[0];
+        const all = products.filter((p) => inCollection(p, c.id));
+        const items = [...all.filter((p) => !fronted.has(p.id)), ...all.filter((p) => fronted.has(p.id))];
+        const cover = items.find((p) => p.featured && !fronted.has(p.id)) ?? items[0];
+        if (cover) {
+          items.splice(items.indexOf(cover), 1);
+          items.unshift(cover);
+          fronted.add(cover.id);
+        }
         // Jusqu'à deux photos en éventail ; la première passe devant.
         const photos = items.filter((p) => p.images[0]).slice(0, 2);
         return (
